@@ -1,0 +1,28 @@
+services:
+  # =========================================
+  # KeyCloak
+  # =========================================
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: keycloak
+    command: start-dev
+    #    depends_on:
+    #      mysql:
+    #        condition: service_healthy
+    environment:
+      #      KC_DB: mysql
+      #      KC_DB_URL: jdbc:mysql://mysql:3306/keycloak
+      #      KC_DB_USERNAME: root
+      #      KC_DB_PASSWORD: ${DB_PASSWORD}
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+    #      KC_HOSTNAME: ${KEYCLOAK_HOSTNAME}
+    #      KEYCLOAK_PORT: ${KEYCLOAK_PORT}
+    #      KC_HOSTNAME_STRICT: "false"
+    #      KC_HTTP_ENABLED: "true"
+    ports:
+      - "8180:8080"
+#    restart: unless-stopped
+#    networks:
+#      - microservice-networks
+# docker compose -f .\docker-compose-provider.yml up -d

@@ -1,0 +1,12 @@
+# Environment
+.env
+
+# IDE
+.idea/
+*.iml
+
+# Maven build
+target/
+
+# Ghi chú cá nhân
+note.txt

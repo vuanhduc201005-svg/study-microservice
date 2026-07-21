@@ -1,0 +1,61 @@
+server:
+  port: ${USER_SERVICE_PORT:9005}
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/dducwsjvbe
+  datasource:
+    url: jdbc:mysql://${DB_PORT:localhost:3306}/${USER_DB_NAME:userdb}?createDatabaseIfNotExist=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:dyl2509201005$}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
+
+#  kafka:
+#    bootstrap-servers: ${KAFKA_SERVERS:localhost:29092}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+
+#axon:
+#  axonserver:
+#    servers: ${AXON_SERVERS:localhost:8124}
+
+openapi:
+  service:
+    api-docs: User Service API
+    server: ${OPENAPI_USER_SERVER:http://localhost:9005}
+    title: API Service
+    version: 1.0.0
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+  packages-to-scan: com.dducwsjvbe.user_service
+
+idp:
+  url: ${KEYCLOAK_URL:http://localhost:8180}
+  client-id: ${KEYCLOAK_CLIENT_ID:dducwsjvbe_app}
+  client-secret: ${KEYCLOAK_CLIENT_SECRET:anDDgjzob9IzVNINf2sJoogibnJrTZ6P}
+  realm: ${KEYCLOAK_REALM:dducwsjvbe}
+
+logging:
+  level:
+     com.dducwsjvbe.user_service.repository;: DEBUG
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: full

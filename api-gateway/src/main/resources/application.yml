@@ -1,0 +1,76 @@
+server:
+  port: ${API_GATEWAY_PORT:8081}
+
+spring:
+  application:
+    name: gateway-service
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/dducwsjvbe
+  data:
+    redis:
+      port: ${REDIS_PORT:6379}
+      host: ${REDIS_HOST:localhost}
+      password: ${REDIS_PASSWORD:dyl2509201005}
+  cloud:
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+          routes:
+            - id: book-service
+              uri: lb://book-service
+              predicates:
+                - Path=${ROUTES_PATH_BOOK_SERVICE:/api/v1/books/**}
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_REPLENISH:10}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_BURST_CAPACITY:20}
+                    redis-rate-limiter.requestedTokens: ${RATE_LIMIT_REQUESTED_TOKENS:1}
+            - id: employee-service
+              uri: lb://employee-service
+              predicates:
+                - Path=${ROUTES_PATH_EMPLOYEE_SERVICE:/api/v1/employees/**}
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_REPLENISH:10}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_BURST_CAPACITY:20}
+                    redis-rate-limiter.requestedTokens: ${RATE_LIMIT_REQUESTED_TOKENS:1}
+            - id: borrowing-service
+              uri: lb://borrowing-service
+              predicates:
+                - Path=${ROUTES_PATH_BORROWING_SERVICE:/api/v1/borrowings/**}
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_REPLENISH:10}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_BURST_CAPACITY:20}
+                    redis-rate-limiter.requestedTokens: ${RATE_LIMIT_REQUESTED_TOKENS:1}
+            - id: user-service
+              uri: http://localhost:9005
+              predicates:
+                - Path=${ROUTES_USER_PATH_USER_SERVICE:/api/v1/users/**}
+            - id: user-service-auth
+              uri: http://localhost:9005
+              predicates:
+                - Path=${ROUTES_AUTH_PATH_USER_SERVICE:/api/v1/auths/**}
+
+eureka:
+  instance:
+    hostname: ${EUREKA_HOST_NAME:localhost}
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.cloud.gateway: DEBUG

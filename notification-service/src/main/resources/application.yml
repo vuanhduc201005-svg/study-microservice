@@ -1,0 +1,17 @@
+server:
+  port: ${NOTIFICATION_SERVICE_PORT:9003}
+spring:
+  kafka:
+    bootstrap-servers: ${KAFKA_SERVERS:localhost:29092}
+  mail:
+    port: ${MAIL_PORT}
+    host: ${MAIL_HOST}
+    from: ${MAIL_FROM}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

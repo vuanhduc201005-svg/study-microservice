@@ -1,0 +1,388 @@
+services:
+  # =========================================
+  # FULL SERVICE
+  # =========================================
+  discovery-server:
+    container_name: discovery-service
+    build:
+      context: ./discovery-service
+      dockerfile: Dockerfile
+    ports:
+      - '8761:8761'
+    environment:
+      EUREKA_HOST_NAME: ${EUREKA_HOST_NAME}
+      EUREKA_URL: ${EUREKA_URL}
+      DISCOVERY_SERVER_PORT: ${DISCOVERY_SERVER_PORT}
+    networks:
+      - microservice-networks
+
+  common-service:
+    container_name: common-service
+    build:
+      context: ./common-service
+      dockerfile: Dockerfile
+    ports:
+      - '8763:8763'
+    environment:
+      COMMON_SERVICE_PORT: ${COMMON_SERVICE_PORT}
+      KAFKA_SERVERS: ${KAFKA_SERVERS}
+    networks:
+      - microservice-networks
+
+  api-gateway:
+    container_name: api-gateway
+    depends_on:
+      - discovery-server
+      - redis
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - '8081:8081'
+    environment:
+      AXON_SERVERS: ${AXON_SERVERS}
+      EUREKA_URL: ${EUREKA_URL}
+      EUREKA_HOST_NAME: ${EUREKA_HOST_NAME}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      API_GATEWAY_PORT: ${API_GATEWAY_PORT}
+      KAFKA_SERVERS: ${KAFKA_SERVERS}
+      ROUTES_PATH_BOOK_SERVICE: ${ROUTES_PATH_BOOK_SERVICE}
+      ROUTES_PATH_EMPLOYEE_SERVICE: ${ROUTES_PATH_EMPLOYEE_SERVICE}
+      ROUTES_PATH_BORROWING_SERVICE: ${ROUTES_PATH_BORROWING_SERVICE}
+      ROUTES_PATH_USER_SERVICE: ${ROUTES_PATH_USER_SERVICE}
+      RATE_LIMIT_REPLENISH: ${RATE_LIMIT_REPLENISH}
+      RATE_LIMIT_BURST_CAPACITY: ${RATE_LIMIT_BURST_CAPACITY}
+      RATE_LIMIT_REQUESTED_TOKENS: ${RATE_LIMIT_REQUESTED_TOKENS}
+    networks:
+      - microservice-networks
+
+  book-service:
+    container_name: book-service
+    depends_on:
+      - discovery-server
+      - common-service
+      - axonserver
+      - kafka
+      - mysql
+    build:
+      context: ./book-service
+      dockerfile: Dockerfile
+    ports:
+      - '9001:9001'
+    environment:
+      AXON_SERVERS: ${AXON_SERVERS}
+      EUREKA_URL: ${EUREKA_URL}
+      BOOK_SERVICE_PORT: ${BOOK_SERVICE_PORT}
+      OPENAPI_BOOK_SERVER: ${OPENAPI_BOOK_SERVER}
+      KAFKA_SERVERS: ${KAFKA_SERVERS}
+      DB_PORT: ${DB_PORT}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_USERNAME: ${DB_USERNAME}
+      BOOK_DB_NAME: ${BOOK_DB_NAME}
+    networks:
+      - microservice-networks
+
+  employee-service:
+    container_name: employee-service
+    depends_on:
+      - discovery-server
+      - common-service
+      - axonserver
+      - kafka
+      - mysql
+    build:
+      context: ./employee-service
+      dockerfile: Dockerfile
+    ports:
+      - '9002:9002'
+    environment:
+      AXON_SERVERS: ${AXON_SERVERS}
+      EUREKA_URL: ${EUREKA_URL}
+      EMPLOYEE_SERVICE_PORT: ${EMPLOYEE_SERVICE_PORT}
+      OPENAPI_EMPLOYEE_SERVER: ${OPENAPI_EMPLOYEE_SERVER}
+      KAFKA_SERVERS: ${KAFKA_SERVERS}
+      DB_PORT: ${DB_PORT}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_USERNAME: ${DB_USERNAME}
+      EMPLOYEE_DB_NAME: ${EMPLOYEE_DB_NAME}
+    networks:
+      - microservice-networks
+
+  notification-service:
+    container_name: notification-service
+    depends_on:
+      - common-service
+      - kafka
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    ports:
+      - '9003:9003'
+    environment:
+      NOTIFICATION_SERVICE_PORT: ${NOTIFICATION_SERVICE_PORT}
+      KAFKA_SERVERS: ${KAFKA_SERVERS}
+      MAIL_PORT: ${MAIL_PORT}
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      MAIL_FROM: ${MAIL_FROM}
+
+    networks:
+      - microservice-networks
+
+  borrowing-service:
+    container_name: borrowing-service
+    depends_on:
+      - discovery-server
+      - common-service
+      - axonserver
+      - mysql
+      - kafka
+    build:
+      context: ./borrowing-service
+      dockerfile: Dockerfile
+    ports:
+      - '9004:9004'
+    environment:
+      AXON_SERVERS: ${AXON_SERVERS}
+      EUREKA_URL: ${EUREKA_URL}
+      BORROWING_SERVICE_PORT: ${BORROWING_SERVICE_PORT}
+      OPENAPI_BORROWING_SERVER: ${OPENAPI_BORROWING_SERVER}
+      KAFKA_SERVERS: ${KAFKA_SERVERS}
+      DB_PORT: ${DB_PORT}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_USERNAME: ${DB_USERNAME}
+      BORROWING_DB_NAME: ${BORROWING_DB_NAME}
+    networks:
+      - microservice-networks
+
+  user-service:
+    container_name: user-service
+    depends_on:
+      - discovery-server
+      - common-service
+      - axonserver
+      - kafka
+      - mysql
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    ports:
+      - '9005:9005'
+    environment:
+      AXON_SERVERS: ${AXON_SERVERS}
+      EUREKA_URL: ${EUREKA_URL}
+      USER_SERVICE_PORT: ${USER_SERVICE_PORT}
+      OPENAPI_USER_SERVER: ${OPENAPI_USER_SERVER}
+      KAFKA_SERVERS: ${KAFKA_SERVERS}
+      DB_PORT: ${DB_PORT}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_USERNAME: ${DB_USERNAME}
+      USER_DB_NAME: ${USER_DB_NAME}
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KEYCLOAK_URL: ${KEYCLOAK_URL}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
+    networks:
+      - microservice-networks
+
+  # =========================================
+  # AXON SERVER
+  # =========================================
+  axonserver:
+    image: docker.axoniq.io/axoniq/axonserver:latest-jdk-17
+    pull_policy: always
+    environment:
+      - AXONIQ_AXONSERVER_STANDALONE=TRUE
+      - axoniq_axonserver_hostname=${AXON_SERVERS}
+    ports:
+      - '8024:8024'
+      - '8124:8124'
+      - '8224:8224'
+#    volumes:
+#      - axonserver_data:/data
+#      - axonserver_eventstore:/eventstore
+#      - axonserver_config:/config
+    networks:
+      - microservice-networks
+
+  # =========================================
+  # MYSQL
+  # =========================================
+  mysql:
+    image: mysql:8.0
+
+    container_name: mysql
+
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+
+    ports:
+      - "3307:3306"
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+    restart: unless-stopped
+
+    networks:
+      - microservice-networks
+
+  # =========================================
+  # REDIS
+  # =========================================
+  redis:
+    image: redis:7.2-alpine
+
+    container_name: redis
+
+    ports:
+      - "6379:6379"
+
+    command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
+
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+
+    volumes:
+      - redis_data:/data
+
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+    restart: unless-stopped
+
+    networks:
+      - microservice-networks
+  # =========================================
+  # ZOOKEEPER
+  # =========================================
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+
+    container_name: zookeeper
+
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+    volumes:
+      - zookeeper_data:/var/lib/zookeeper/data
+      - zookeeper_log:/var/lib/zookeeper/log
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "2181" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+    restart: unless-stopped
+
+    networks:
+      - microservice-networks
+
+  # =========================================
+  # KAFKA
+  # =========================================
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+
+    container_name: kafka
+
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+
+    healthcheck:
+      test: [ "CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092" ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+
+    restart: unless-stopped
+
+    networks:
+      - microservice-networks
+
+  # =========================================
+  # KAFKA UI
+  # =========================================
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+
+    container_name: kafka-ui
+
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+    ports:
+      - "8989:8080"
+
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+
+    restart: unless-stopped
+
+    networks:
+      - microservice-networks
+
+# =========================================
+# VOLUMES
+# =========================================
+volumes:
+#  axonserver_data:
+#  axonserver_eventstore:
+#  axonserver_config:
+  mysql_data:
+  redis_data:
+  kafka_data:
+  zookeeper_data:
+  zookeeper_log:
+#  es_data:
+#  prometheus_data:
+#  grafana_data:
+#  uploads_data:
+#  temp_data:
+# =========================================
+# NETWORK
+# =========================================
+networks:
+  microservice-networks:
+    driver: bridge
