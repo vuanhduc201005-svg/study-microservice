@@ -8,7 +8,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8180/realms/dducwsjvbe
+          issuer-uri: ${KEYCLOAK_URL:http://localhost:8180}/realms/dducwsjvbe
   data:
     redis:
       port: ${REDIS_PORT:6379}
@@ -16,50 +16,75 @@ spring:
       password: ${REDIS_PASSWORD:dyl2509201005}
   cloud:
     gateway:
+      httpclient:
+        connect-timeout: ${C_TIMEOUT:5000}
+        response-timeout: ${R_TIMEOUT:10000}
       server:
         webflux:
           discovery:
             locator:
               enabled: true
           routes:
-            - id: book-service
-              uri: lb://book-service
-              predicates:
-                - Path=${ROUTES_PATH_BOOK_SERVICE:/api/v1/books/**}
-              filters:
-                - name: RequestRateLimiter
-                  args:
-                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_REPLENISH:10}
-                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_BURST_CAPACITY:20}
-                    redis-rate-limiter.requestedTokens: ${RATE_LIMIT_REQUESTED_TOKENS:1}
-            - id: employee-service
-              uri: lb://employee-service
-              predicates:
-                - Path=${ROUTES_PATH_EMPLOYEE_SERVICE:/api/v1/employees/**}
-              filters:
-                - name: RequestRateLimiter
-                  args:
-                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_REPLENISH:10}
-                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_BURST_CAPACITY:20}
-                    redis-rate-limiter.requestedTokens: ${RATE_LIMIT_REQUESTED_TOKENS:1}
-            - id: borrowing-service
-              uri: lb://borrowing-service
-              predicates:
-                - Path=${ROUTES_PATH_BORROWING_SERVICE:/api/v1/borrowings/**}
-              filters:
-                - name: RequestRateLimiter
-                  args:
-                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_REPLENISH:10}
-                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_BURST_CAPACITY:20}
-                    redis-rate-limiter.requestedTokens: ${RATE_LIMIT_REQUESTED_TOKENS:1}
             - id: user-service
-              uri: http://localhost:9005
+              uri: lb://USER-SERVICE
               predicates:
                 - Path=${ROUTES_USER_PATH_USER_SERVICE:/api/v1/users/**}
+              metadata:
+                response-timeout: ${R_TIMEOUT:10000}   # 2 giây
+                connect-timeout: ${C_TIMEOUT:5000}   # 1 giây
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_REPLENISH:10}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_BURST_CAPACITY:20}
+                    redis-rate-limiter.requestedTokens: ${RATE_LIMIT_REQUESTED_TOKENS:1}
             - id: user-service-auth
-              uri: http://localhost:9005
+              uri: lb://USER-SERVICE
               predicates:
                 - Path=${ROUTES_AUTH_PATH_USER_SERVICE:/api/v1/auths/**}
+              metadata:
+                response-timeout: ${R_TIMEOUT:10s}
+                connect-timeout: ${C_TIMEOUT:5000}
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_REPLENISH:10}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_BURST_CAPACITY:20}
+                    redis-rate-limiter.requestedTokens: ${RATE_LIMIT_REQUESTED_TOKENS:1}
+            - id: article-service
+              uri: lb://ARTICLE-SERVICE
+              predicates:
+                - Path=${ROUTES_PATH_ARTICLE_SERVICE:/api/v1/articles/**}
+              metadata:
+                response-timeout: ${R_TIMEOUT:10000}
+                connect-timeout: ${C_TIMEOUT:5000}
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_REPLENISH:10}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_BURST_CAPACITY:20}
+                    redis-rate-limiter.requestedTokens: ${RATE_LIMIT_REQUESTED_TOKENS:1}
+            - id: file-service
+              uri: lb://FILE-SERVICE
+              predicates:
+                - Path=${ROUTES_PATH_FILE_SERVICE:/api/v1/files/**}
+              metadata:
+                response-timeout: ${R_TIMEOUT:10000}
+                connect-timeout: ${C_TIMEOUT:5000}
+            - id: file-service-static
+              uri: lb://FILE-SERVICE
+              predicates:
+                - Path=/uploads/**
+              metadata:
+                response-timeout: ${R_TIMEOUT:10000}
+                connect-timeout: ${C_TIMEOUT:5000}
+
+#              filters:
+#                - name: RequestRateLimiter
+#                  args:
+#                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_REPLENISH:10}
+#                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_BURST_CAPACITY:20}
+#                    redis-rate-limiter.requestedTokens: ${RATE_LIMIT_REQUESTED_TOKENS:1}
 
 eureka:
   instance:
@@ -74,3 +99,34 @@ logging:
   level:
     org.springframework.security: DEBUG
     org.springframework.cloud.gateway: DEBUG
+
+#      - id: book-service
+#        uri: lb://BOOK-SERVICE
+#        predicates:
+#          - Path=${ROUTES_PATH_BOOK_SERVICE:/api/v1/books/**}
+#        filters:
+#          - name: RequestRateLimiter
+#            args:
+#              redis-rate-limiter.replenishRate: ${RATE_LIMIT_REPLENISH:10}
+#              redis-rate-limiter.burstCapacity: ${RATE_LIMIT_BURST_CAPACITY:20}
+#              redis-rate-limiter.requestedTokens: ${RATE_LIMIT_REQUESTED_TOKENS:1}
+#      - id: employee-service
+#        uri: lb://EMPLOYEE-SERVICE
+#        predicates:
+#          - Path=${ROUTES_PATH_EMPLOYEE_SERVICE:/api/v1/employees/**}
+#        filters:
+#          - name: RequestRateLimiter
+#            args:
+#              redis-rate-limiter.replenishRate: ${RATE_LIMIT_REPLENISH:10}
+#              redis-rate-limiter.burstCapacity: ${RATE_LIMIT_BURST_CAPACITY:20}
+#              redis-rate-limiter.requestedTokens: ${RATE_LIMIT_REQUESTED_TOKENS:1}
+#      - id: borrowing-service
+#        uri: lb://BORROWING-SERVICE
+#        predicates:
+#          - Path=${ROUTES_PATH_BORROWING_SERVICE:/api/v1/borrowings/**}
+#        filters:
+#          - name: RequestRateLimiter
+#            args:
+#              redis-rate-limiter.replenishRate: ${RATE_LIMIT_REPLENISH:10}
+#              redis-rate-limiter.burstCapacity: ${RATE_LIMIT_BURST_CAPACITY:20}
+#              redis-rate-limiter.requestedTokens: ${RATE_LIMIT_REQUESTED_TOKENS:1}

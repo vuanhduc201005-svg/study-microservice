@@ -1,0 +1,64 @@
+server:
+  port: ${ARTICLE_SERVICE_PORT:9006}
+
+spring:
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:dyl2509201005}
+      timeout: ${R_TIMEOUT:2000}
+      lettuce:
+        pool:
+          max-active: ${R_MAX_A:8}
+          max-idle: ${R_MAX_I:8}
+          max-wait: ${R_MAX_W:1000}
+          min-idle: ${R_MIN_I:2}
+  kafka:
+    bootstrap-servers: ${KAFKA_SERVERS:localhost:29092}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_URL:http://localhost:8180}/realms/dducwsjvbe
+  datasource:
+    url: jdbc:mysql://${DB_PORT:localhost:3306}/${ARTICLE_DB_NAME:articledb}?createDatabaseIfNotExist=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:dyl2509201005$}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+
+axon:
+  axonserver:
+    servers: ${AXON_SERVERS:localhost:8124}
+
+openapi:
+  service:
+    api-docs: Article Service API
+    server: ${OPENAPI_ARTICLE_SERVER:http://localhost:9006}
+    title: API Service
+    version: 1.0.0
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+  packages-to-scan: com.dducwsjvbe.article_service
+
+idp:
+  url: ${KEYCLOAK_URL:http://localhost:8180}
+  client-id: ${KEYCLOAK_CLIENT_ID:dducwsjvbe_app}
+  client-secret: ${KEYCLOAK_CLIENT_SECRET:WoZYF4a1w4hIPrq6laxLR28HlNqOGhcK}
+  realm: ${KEYCLOAK_REALM:dducwsjvbe}
+

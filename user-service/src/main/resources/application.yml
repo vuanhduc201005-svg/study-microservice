@@ -6,7 +6,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8180/realms/dducwsjvbe
+          issuer-uri: ${KEYCLOAK_URL:http://localhost:8180}/realms/dducwsjvbe
   datasource:
     url: jdbc:mysql://${DB_PORT:localhost:3306}/${USER_DB_NAME:userdb}?createDatabaseIfNotExist=true
     username: ${DB_USERNAME:root}
@@ -16,18 +16,17 @@ spring:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: update
-
-#  kafka:
-#    bootstrap-servers: ${KAFKA_SERVERS:localhost:29092}
+  kafka:
+    bootstrap-servers: ${KAFKA_SERVERS:localhost:29092}
 
 eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
 
-#axon:
-#  axonserver:
-#    servers: ${AXON_SERVERS:localhost:8124}
+axon:
+  axonserver:
+    servers: ${AXON_SERVERS:localhost:8124}
 
 openapi:
   service:
@@ -48,7 +47,7 @@ springdoc:
 idp:
   url: ${KEYCLOAK_URL:http://localhost:8180}
   client-id: ${KEYCLOAK_CLIENT_ID:dducwsjvbe_app}
-  client-secret: ${KEYCLOAK_CLIENT_SECRET:anDDgjzob9IzVNINf2sJoogibnJrTZ6P}
+  client-secret: ${KEYCLOAK_CLIENT_SECRET:WoZYF4a1w4hIPrq6laxLR28HlNqOGhcK}
   realm: ${KEYCLOAK_REALM:dducwsjvbe}
 
 logging:

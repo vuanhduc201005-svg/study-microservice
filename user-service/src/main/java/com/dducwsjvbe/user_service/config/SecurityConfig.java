@@ -37,12 +37,15 @@ public class SecurityConfig {
         return http.build();
     }
     @Bean
-    Converter<Jwt, ? extends AbstractAuthenticationToken> jwtAuthenticationConverter() {
-        return jwt -> {
-            List<GrantedAuthority> authorities = JwtRoleUtils.extractRoles(jwt).stream()
-                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-                    .collect(Collectors.toList());
-            return new JwtAuthenticationToken(jwt, authorities);
+    Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter() {
+        return new Converter<Jwt, AbstractAuthenticationToken>() {
+            @Override
+            public AbstractAuthenticationToken convert(Jwt jwt) {
+                List<GrantedAuthority> authorities = JwtRoleUtils.extractRoles(jwt).stream()
+                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                        .collect(Collectors.toList());
+                return new JwtAuthenticationToken(jwt, authorities);
+            }
         };
     }
     @Bean

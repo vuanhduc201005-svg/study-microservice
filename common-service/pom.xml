@@ -39,7 +39,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
@@ -68,21 +67,21 @@
             <version>3.5.14</version>
         </dependency>
 <!--AXON FRAMEWORK-->
-<!--        <dependency>-->
-<!--            <groupId>org.axonframework</groupId>-->
-<!--            <artifactId>axon-spring-boot-starter</artifactId>-->
-<!--            <version>4.9.3</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>com.google.guava</groupId>-->
-<!--            <artifactId>guava</artifactId>-->
-<!--            <version>33.2.1-jre</version>-->
-<!--        </dependency>-->
-        <!--        kafka-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-kafka</artifactId>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.axonframework</groupId>
+            <artifactId>axon-spring-boot-starter</artifactId>
+            <version>4.9.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>33.2.1-jre</version>
+        </dependency>
+<!--                kafka-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-kafka</artifactId>
+        </dependency>
         <!--DOCS-->
         <dependency>
             <groupId>org.springdoc</groupId>

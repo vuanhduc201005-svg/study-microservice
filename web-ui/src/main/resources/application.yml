@@ -1,0 +1,30 @@
+server:
+  port: 3000
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+
+keycloak:
+  url: ${KEYCLOAK_URL:http://localhost:8180}
+  realm: ${KEYCLOAK_REALM:dducwsjvbe}
+  client-id: ${KEYCLOAK_CLIENT_ID:dducwsjvbe_app}
+  client-secret: ${KEYCLOAK_CLIENT_SECRET:WoZYF4a1w4hIPrq6laxLR28HlNqOGhcK}
+
+GatewayPort:
+  url: ${API_GATEWAY_URL:http://localhost:8081}
+
+axon:
+  axonserver:
+    servers: ${AXON_SERVERS:localhost:8124}
+
+spring:
+  kafka:
+    bootstrap-servers: ${KAFKA_SERVERS:localhost:29092}
+  servlet:
+    multipart:
+      max-file-size: 300MB
+      max-request-size: 300MB
+open:
+  file-service: ${FILE_SERVICE_URL:http://localhost:9007}

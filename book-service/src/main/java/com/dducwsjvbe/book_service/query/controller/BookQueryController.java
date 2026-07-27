@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,7 +31,7 @@ public class BookQueryController {
                                               @RequestParam(required = false) String[] book,
                                               @RequestParam Boolean isReady) {
         log.info("searchFilterBook");
-        GetFilterBook getFilterBook = new GetFilterBook();
+        GetFilterBook getFilterBook = new GetFilterBook(pageNo, pageSize, book, isReady);
         //lấy kq dạng bất đồng bộ nhưng cần trả kq ngay nên .join để đợi
         List<BookResponse> result = queryGateway.query(getFilterBook, ResponseTypes.multipleInstancesOf(BookResponse.class)).join();
         return result;

@@ -3,9 +3,9 @@ services:
   # FULL SERVICE
   # =========================================
   discovery-server:
-    container_name: discovery-service
+    container_name: discovery-server
     build:
-      context: ./discovery-service
+      context: ./discovery-server
       dockerfile: Dockerfile
     ports:
       - '8761:8761'
@@ -40,49 +40,55 @@ services:
     ports:
       - '8081:8081'
     environment:
-      AXON_SERVERS: ${AXON_SERVERS}
+#      AXON_SERVERS: ${AXON_SERVERS}
       EUREKA_URL: ${EUREKA_URL}
       EUREKA_HOST_NAME: ${EUREKA_HOST_NAME}
       REDIS_PASSWORD: ${REDIS_PASSWORD}
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
       API_GATEWAY_PORT: ${API_GATEWAY_PORT}
-      KAFKA_SERVERS: ${KAFKA_SERVERS}
+#      KAFKA_SERVERS: ${KAFKA_SERVERS}
       ROUTES_PATH_BOOK_SERVICE: ${ROUTES_PATH_BOOK_SERVICE}
       ROUTES_PATH_EMPLOYEE_SERVICE: ${ROUTES_PATH_EMPLOYEE_SERVICE}
       ROUTES_PATH_BORROWING_SERVICE: ${ROUTES_PATH_BORROWING_SERVICE}
       ROUTES_PATH_USER_SERVICE: ${ROUTES_PATH_USER_SERVICE}
+      ROUTES_PATH_ARTICLE_SERVICE: ${ROUTES_PATH_ARTICLE_SERVICE}
+      ROUTES_PATH_FILE_SERVICE: ${ROUTES_PATH_FILE_SERVICE}
       RATE_LIMIT_REPLENISH: ${RATE_LIMIT_REPLENISH}
       RATE_LIMIT_BURST_CAPACITY: ${RATE_LIMIT_BURST_CAPACITY}
       RATE_LIMIT_REQUESTED_TOKENS: ${RATE_LIMIT_REQUESTED_TOKENS}
+      KEYCLOAK_URL: ${KEYCLOAK_URL}
+      C_TIMEOUT: ${C_TIMEOUT}
+      R_TIMEOUT: ${R_TIMEOUT}
+
     networks:
       - microservice-networks
 
-  book-service:
-    container_name: book-service
-    depends_on:
-      - discovery-server
-      - common-service
-      - axonserver
-      - kafka
-      - mysql
-    build:
-      context: ./book-service
-      dockerfile: Dockerfile
-    ports:
-      - '9001:9001'
-    environment:
-      AXON_SERVERS: ${AXON_SERVERS}
-      EUREKA_URL: ${EUREKA_URL}
-      BOOK_SERVICE_PORT: ${BOOK_SERVICE_PORT}
-      OPENAPI_BOOK_SERVER: ${OPENAPI_BOOK_SERVER}
-      KAFKA_SERVERS: ${KAFKA_SERVERS}
-      DB_PORT: ${DB_PORT}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_USERNAME: ${DB_USERNAME}
-      BOOK_DB_NAME: ${BOOK_DB_NAME}
-    networks:
-      - microservice-networks
+#  book-service:
+#    container_name: book-service
+#    depends_on:
+#      - discovery-server
+#      - common-service
+#      - axonserver
+#      - kafka
+#      - mysql
+#    build:
+#      context: ./book-service
+#      dockerfile: Dockerfile
+#    ports:
+#      - '9001:9001'
+#    environment:
+#      AXON_SERVERS: ${AXON_SERVERS}
+#      EUREKA_URL: ${EUREKA_URL}
+#      BOOK_SERVICE_PORT: ${BOOK_SERVICE_PORT}
+#      OPENAPI_BOOK_SERVER: ${OPENAPI_BOOK_SERVER}
+#      KAFKA_SERVERS: ${KAFKA_SERVERS}
+#      DB_PORT: ${DB_PORT}
+#      DB_PASSWORD: ${DB_PASSWORD}
+#      DB_USERNAME: ${DB_USERNAME}
+#      BOOK_DB_NAME: ${BOOK_DB_NAME}
+#    networks:
+#      - microservice-networks
 
   employee-service:
     container_name: employee-service
@@ -132,31 +138,31 @@ services:
     networks:
       - microservice-networks
 
-  borrowing-service:
-    container_name: borrowing-service
-    depends_on:
-      - discovery-server
-      - common-service
-      - axonserver
-      - mysql
-      - kafka
-    build:
-      context: ./borrowing-service
-      dockerfile: Dockerfile
-    ports:
-      - '9004:9004'
-    environment:
-      AXON_SERVERS: ${AXON_SERVERS}
-      EUREKA_URL: ${EUREKA_URL}
-      BORROWING_SERVICE_PORT: ${BORROWING_SERVICE_PORT}
-      OPENAPI_BORROWING_SERVER: ${OPENAPI_BORROWING_SERVER}
-      KAFKA_SERVERS: ${KAFKA_SERVERS}
-      DB_PORT: ${DB_PORT}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_USERNAME: ${DB_USERNAME}
-      BORROWING_DB_NAME: ${BORROWING_DB_NAME}
-    networks:
-      - microservice-networks
+#  borrowing-service:
+#    container_name: borrowing-service
+#    depends_on:
+#      - discovery-server
+#      - common-service
+#      - axonserver
+#      - mysql
+#      - kafka
+#    build:
+#      context: ./borrowing-service
+#      dockerfile: Dockerfile
+#    ports:
+#      - '9004:9004'
+#    environment:
+#      AXON_SERVERS: ${AXON_SERVERS}
+#      EUREKA_URL: ${EUREKA_URL}
+#      BORROWING_SERVICE_PORT: ${BORROWING_SERVICE_PORT}
+#      OPENAPI_BORROWING_SERVER: ${OPENAPI_BORROWING_SERVER}
+#      KAFKA_SERVERS: ${KAFKA_SERVERS}
+#      DB_PORT: ${DB_PORT}
+#      DB_PASSWORD: ${DB_PASSWORD}
+#      DB_USERNAME: ${DB_USERNAME}
+#      BORROWING_DB_NAME: ${BORROWING_DB_NAME}
+#    networks:
+#      - microservice-networks
 
   user-service:
     container_name: user-service
@@ -176,13 +182,13 @@ services:
       EUREKA_URL: ${EUREKA_URL}
       USER_SERVICE_PORT: ${USER_SERVICE_PORT}
       OPENAPI_USER_SERVER: ${OPENAPI_USER_SERVER}
-      KAFKA_SERVERS: ${KAFKA_SERVERS}
+#      KAFKA_SERVERS: ${KAFKA_SERVERS}
       DB_PORT: ${DB_PORT}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_USERNAME: ${DB_USERNAME}
       USER_DB_NAME: ${USER_DB_NAME}
-      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+#      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+#      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KEYCLOAK_URL: ${KEYCLOAK_URL}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
@@ -190,12 +196,119 @@ services:
     networks:
       - microservice-networks
 
+  article-service:
+    container_name: article-service
+    depends_on:
+      - discovery-server
+      - axonserver
+      - mysql
+      - kafka
+    build:
+      context: ./article-service
+      dockerfile: Dockerfile
+    ports:
+      - '9006:9006'
+    environment:
+      EUREKA_URL: ${EUREKA_URL}
+      AXON_SERVERS: ${AXON_SERVERS}
+      ARTICLE_SERVICE_PORT: ${ARTICLE_SERVICE_PORT}
+      OPENAPI_ARTICLE_SERVER: ${OPENAPI_ARTICLE_SERVER}
+      KAFKA_SERVERS: ${KAFKA_SERVERS}
+      DB_PORT: ${DB_PORT}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_USERNAME: ${DB_USERNAME}
+      ARTICLE_DB_NAME: ${ARTICLE_DB_NAME}
+#      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+#      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KEYCLOAK_URL: ${KEYCLOAK_URL}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      R_TIMEOUT: ${R_TIMEOUT}
+      R_MAX_A: ${R_MAX_A}
+      R_MAX_I: ${R_MAX_I}
+      R_MAX_W: ${R_MAX_W}
+      R_MIN_I: ${R_MIN_I}
+
+    volumes:
+     - uploads_data:/app/uploads
+
+    networks:
+      - microservice-networks
+
+
+  file-service:
+    container_name: file-service
+    depends_on:
+      - discovery-server
+      - axonserver
+      - mysql
+      - kafka
+    build:
+      context: ./file-service
+      dockerfile: Dockerfile
+    ports:
+      - '9007:9007'
+    environment:
+      EUREKA_URL: ${EUREKA_URL}
+      AXON_SERVERS: ${AXON_SERVERS}
+      FILE_SERVICE_PORT: ${FILE_SERVICE_PORT}
+      OPENAPI_FILE_SERVER: ${OPENAPI_FILE_SERVER}
+      FILE_UPLOAD_PATH: ${FILE_UPLOAD_PATH}
+      FILE_TEMP_PATH: ${FILE_TEMP_PATH}
+      UPLOAD_DIR: ${UPLOAD_DIR}
+      KAFKA_SERVERS: ${KAFKA_SERVERS}
+      DB_PORT: ${DB_PORT}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_USERNAME: ${DB_USERNAME}
+      FILE_DB_NAME: ${FILE_DB_NAME}
+#      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+#      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KEYCLOAK_URL: ${KEYCLOAK_URL}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
+    volumes:
+      - uploads_data:/app/uploads
+      - temp_data:/app/temp
+    networks:
+      - microservice-networks
+
+
+  web-ui:
+    container_name: web-ui
+    depends_on:
+      - discovery-server
+      - common-service
+    build:
+      context: ./web-ui
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    environment:
+      EUREKA_URL: ${EUREKA_URL}
+      KEYCLOAK_URL: ${KEYCLOAK_URL}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
+      API_GATEWAY_URL: ${API_GATEWAY_URL}
+      AXON_SERVERS: ${AXON_SERVERS}
+      KAFKA_SERVERS: ${KAFKA_SERVERS}
+      FILE_SERVICE_URL: ${FILE_SERVICE_URL}
+
+
+    networks:
+      - microservice-networks
   # =========================================
   # AXON SERVER
   # =========================================
   axonserver:
     image: docker.axoniq.io/axoniq/axonserver:latest-jdk-17
     pull_policy: always
+    container_name: axonserver
     environment:
       - AXONIQ_AXONSERVER_STANDALONE=TRUE
       - axoniq_axonserver_hostname=${AXON_SERVERS}
@@ -203,10 +316,10 @@ services:
       - '8024:8024'
       - '8124:8124'
       - '8224:8224'
-#    volumes:
-#      - axonserver_data:/data
-#      - axonserver_eventstore:/eventstore
-#      - axonserver_config:/config
+    volumes:
+      - axonserver_data:/data
+      - axonserver_eventstore:/eventstore
+      - axonserver_config:/config
     networks:
       - microservice-networks
 
@@ -363,26 +476,58 @@ services:
     networks:
       - microservice-networks
 
+  # =========================================
+  # KeyCloak
+  # =========================================
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: keycloak
+    command: start-dev
+    #    depends_on:
+    #      mysql:
+    #        condition: service_healthy
+    environment:
+      #      KC_DB: mysql
+      #      KC_DB_URL: jdbc:mysql://mysql:3306/keycloak
+      #      KC_DB_USERNAME: root
+      #      KC_DB_PASSWORD: ${DB_PASSWORD}
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+    #      KC_HOSTNAME: ${KEYCLOAK_HOSTNAME}
+    #      KEYCLOAK_PORT: ${KEYCLOAK_PORT}
+    #      KC_HOSTNAME_STRICT: "false"
+    #      KC_HTTP_ENABLED: "true"
+    ports:
+      - "8180:8080"
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+    restart: unless-stopped
+    networks:
+      - microservice-networks
+
 # =========================================
 # VOLUMES
 # =========================================
 volumes:
-#  axonserver_data:
-#  axonserver_eventstore:
-#  axonserver_config:
+  axonserver_data:
+  axonserver_eventstore:
+  axonserver_config:
   mysql_data:
   redis_data:
   kafka_data:
   zookeeper_data:
   zookeeper_log:
+  keycloak_data:
 #  es_data:
 #  prometheus_data:
 #  grafana_data:
-#  uploads_data:
-#  temp_data:
+  uploads_data:
+  temp_data:
 # =========================================
 # NETWORK
 # =========================================
 networks:
   microservice-networks:
     driver: bridge
+#
+#    mvn clean install -DskipTests
