@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report bài viết</title>
+
+    <link rel="stylesheet"
+          th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap"
+          rel="stylesheet">
+
+    <style>
+
+        :root {
+            --bg: #F5F1FE;
+            --ink: #241B3A;
+            --ink-soft: #6B6280;
+            --card: #FFFFFF;
+
+            --grad-1: #7C3AED;
+            --grad-2: #EC4899;
+            --grad-3: #F59E0B;
+
+            --report: #F59E0B;
+            --report-dark: #B45309;
+            --danger: #EF4444;
+
+            --card-radius: 20px;
+            --pill-radius: 999px;
+
+            --shadow-soft: 0 10px 30px -12px rgba(124, 58, 237, .25);
+            --shadow-card: 0 6px 20px -8px rgba(36, 27, 58, .15);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--ink);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, .brand, .btn {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* ============ top bar ============ */
+        .topbar {
+            background: linear-gradient(120deg, var(--grad-1) 0%, var(--grad-2) 100%);
+            padding: 28px 16px 56px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .topbar::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 85% 0%, rgba(245, 158, 11, .35), transparent 45%);
+            pointer-events: none;
+        }
+
+        .brand {
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: -.02em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--grad-3);
+            box-shadow: 0 0 0 4px rgba(245, 158, 11, .35);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: rgba(255, 255, 255, .9);
+            font-size: .85rem;
+            font-weight: 600;
+            text-decoration: none;
+            margin-top: 14px;
+        }
+
+        .back-link:hover {
+            color: #fff;
+        }
+
+        /* ============ content ============ */
+        .content {
+            max-width: 560px;
+            margin: -32px auto 60px;
+            padding: 0 16px;
+        }
+
+        .card-block {
+            background: var(--card);
+            border-radius: var(--card-radius);
+            box-shadow: var(--shadow-card);
+            padding: 22px;
+            margin-bottom: 18px;
+        }
+
+        .card-block h3 {
+            font-size: 1rem;
+            margin-bottom: 14px;
+        }
+
+        .article-name {
+            font-weight: 700;
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+        }
+
+        .article-message {
+            font-size: .92rem;
+            color: var(--ink-soft);
+            line-height: 1.55;
+            white-space: pre-wrap;
+            word-break: break-word;
+            background: #F8F6FE;
+            border-radius: 14px;
+            padding: 12px 14px;
+        }
+
+        .form-card {
+            background: var(--card);
+            border-radius: var(--card-radius);
+            box-shadow: var(--shadow-soft);
+            padding: 22px;
+        }
+
+        .form-card label {
+            font-size: .78rem;
+            font-weight: 600;
+            color: var(--ink-soft);
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-card textarea {
+            width: 100%;
+            border-radius: 14px;
+            border: 1.5px solid #EBE6FA;
+            padding: 12px 16px;
+            font-size: .95rem;
+            resize: vertical;
+            min-height: 120px;
+            margin-bottom: 8px;
+        }
+
+        .form-card textarea:focus {
+            outline: none;
+            border-color: var(--grad-1);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, .15);
+        }
+
+        .char-hint {
+            font-size: .75rem;
+            color: var(--ink-soft);
+            margin-bottom: 18px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            border: none;
+            border-radius: var(--pill-radius);
+            padding: 11px 14px;
+            font-weight: 600;
+            background: #F1EEFB;
+            color: var(--ink-soft);
+        }
+
+        .btn-cancel:hover {
+            background: #E7E0FA;
+            color: var(--ink);
+        }
+
+        .btn-submit-report {
+            flex: 1;
+            border: none;
+            border-radius: var(--pill-radius);
+            padding: 11px 14px;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(120deg, var(--report), var(--danger));
+            box-shadow: 0 8px 18px -6px rgba(245, 158, 11, .5);
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+
+        .btn-submit-report:hover {
+            transform: translateY(-1px);
+            color: #fff;
+        }
+
+        .btn-submit-report:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .empty-article {
+            text-align: center;
+            color: var(--ink-soft);
+            padding: 20px;
+        }
+
+        /* ============ toast ============ */
+        .toast-stack {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast-chip {
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: .88rem;
+            box-shadow: 0 8px 20px -6px rgba(0, 0, 0, .3);
+            animation: rise .25s ease both;
+        }
+
+        @keyframes rise {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .toast-success {
+            background: linear-gradient(120deg, #10B981, #059669);
+        }
+
+        .toast-error {
+            background: linear-gradient(120deg, var(--danger), #B91C1C);
+        }
+
+    </style>
+</head>
+
+<body>
+
+<!-- ================= TOP BAR ================= -->
+<div class="topbar">
+    <div class="container" style="max-width:560px;">
+
+        <div class="brand">
+            <span class="dot"></span>
+            Report bài viết
+        </div>
+
+        <a class="back-link" href="/search-user">
+            ← Quay lại danh sách
+        </a>
+    </div>
+</div>
+
+<!-- ================= CONTENT ================= -->
+<div class="content">
+
+    <!-- bài viết đang được report, hiển thị lại để user xác nhận -->
+    <div class="card-block" id="articleInfoBlock">
+        <h3>Bài viết bạn đang report</h3>
+        <div id="articleInfoContent">
+            <div class="empty-article">Đang tải thông tin bài viết...</div>
+        </div>
+    </div>
+
+    <!-- form nhập lý do report -->
+    <div class="form-card">
+        <label for="reportMessageInput">Lý do report</label>
+        <textarea id="reportMessageInput" placeholder="Nhập lý do bạn muốn report bài viết này..."></textarea>
+        <div class="char-hint">Hãy mô tả cụ thể lý do (spam, nội dung sai sự thật, vi phạm...) để admin xử lý nhanh hơn.</div>
+
+        <div class="form-actions">
+            <a href="/search-user" class="btn-cancel" style="display:flex;align-items:center;justify-content:center;text-decoration:none;">Hủy</a>
+            <button type="button" class="btn-submit-report" id="btnSubmitReport">🚩 Gửi report</button>
+        </div>
+    </div>
+
+</div>
+
+<div class="toast-stack" id="toastStack"></div>
+
+<script>
+
+    // ============================================================
+    // articleId / name / message được truyền qua query string từ
+    // trang searchuser.html khi bấm nút Report, tránh phải gọi thêm
+    // API get-article-by-id chỉ để hiển thị lại thông tin xác nhận.
+    // Gửi report proxy qua /search-user/report/{articleId} (-> api 5).
+    // ============================================================
+
+    const toastStack = document.getElementById("toastStack");
+    const articleInfoContent = document.getElementById("articleInfoContent");
+    const reportMessageInput = document.getElementById("reportMessageInput");
+    const btnSubmitReport = document.getElementById("btnSubmitReport");
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const articleId = urlParams.get("articleId") || "";
+    const articleName = urlParams.get("name") || "";
+    const articleMessage = urlParams.get("message") || "";
+
+    function showToast(message, type) {
+        const chip = document.createElement("div");
+        chip.className = "toast-chip toast-" + (type || "info");
+        chip.textContent = message;
+        toastStack.appendChild(chip);
+        setTimeout(function () {
+            chip.remove();
+        }, 3000);
+    }
+
+    function renderArticleInfo() {
+        if (!articleId) {
+            articleInfoContent.innerHTML =
+                '<div class="empty-article">Không xác định được bài viết cần report. Vui lòng quay lại danh sách và thử lại.</div>';
+            btnSubmitReport.disabled = true;
+            return;
+        }
+
+        const nameHtml = articleName
+            ? '<div class="article-name"></div>'
+            : '<div class="article-name">(Không có tên)</div>';
+
+        articleInfoContent.innerHTML =
+            '<div class="article-name" id="articleNameSlot"></div>' +
+            '<div class="article-message" id="articleMessageSlot"></div>';
+
+        document.getElementById("articleNameSlot").textContent = articleName || "(Không có tên)";
+        document.getElementById("articleMessageSlot").textContent = articleMessage || "(Bài viết không có nội dung)";
+    }
+
+    function submitReport() {
+        const msg = reportMessageInput.value.trim();
+
+        if (!msg) {
+            showToast("Vui lòng nhập lý do report", "error");
+            return;
+        }
+        if (!articleId) {
+            showToast("Thiếu thông tin bài viết cần report", "error");
+            return;
+        }
+
+        btnSubmitReport.disabled = true;
+        btnSubmitReport.textContent = "Đang gửi...";
+
+        const url =
+            "/search-user/report/" + encodeURIComponent(articleId) +
+            "?message=" + encodeURIComponent(msg);
+
+        fetch(url, {
+            method: "POST"
+        })
+            .then(function (res) {
+                if (!res.ok) {
+                    throw new Error("Report bài thất bại (HTTP " + res.status + ")");
+                }
+                showToast("Đã gửi report bài viết 🚩", "success");
+                // quay lại danh sách sau khi report thành công
+                setTimeout(function () {
+                    window.location.href = "/search-user";
+                }, 900);
+            })
+            .catch(function (err) {
+                console.error(err);
+                showToast(err.message || "Report bài thất bại", "error");
+                btnSubmitReport.disabled = false;
+                btnSubmitReport.textContent = "🚩 Gửi report";
+            });
+    }
+
+    btnSubmitReport.addEventListener("click", submitReport);
+
+    reportMessageInput.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+            submitReport();
+        }
+    });
+
+    renderArticleInfo();
+
+</script>
+
+<script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+</body>
+
+</html>

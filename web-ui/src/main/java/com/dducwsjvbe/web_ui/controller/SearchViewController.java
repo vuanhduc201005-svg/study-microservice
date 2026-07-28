@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -112,5 +113,68 @@ public class SearchViewController {
                 .uri(uri)
                 .retrieve()
                 .body(String.class);
+    }
+    //user
+    @GetMapping("/search-user")
+    public String searchUserPage(Model model) {
+        log.info("open search user page");
+        model.addAttribute("fileServiceUrl", fileServiceUrl);
+        return "searchuser"; // ứng với templates/searchuser.html
+    }
+
+    // ---- proxy: tìm kiếm bài viết cho user (api 4) ----
+    @GetMapping(value = "/search-user/list", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public String searchArticlesForUser(
+            @RequestParam(defaultValue = "0") int pageNo,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String message) {
+
+        log.info("searchArticlesForUser name={}; message={}; pageNo={}", name, message, pageNo);
+
+        UriComponentsBuilder builder = UriComponentsBuilder
+                .fromUriString(gatewayUrl + "/api/v1/articles/true")
+                .queryParam("pageNo", pageNo)
+                .queryParam("isReady", true);
+
+        if (name != null && !name.isBlank()) {
+            builder.queryParam("article", "name:" + name);
+        }
+        if (message != null && !message.isBlank()) {
+            builder.queryParam("article", "message:" + message);
+        }
+
+        return restClient.get()
+                .uri(builder.build().toUri())
+                .retrieve()
+                .body(String.class);
+    }
+
+    @GetMapping("/report")
+    public String reportPage() {
+        log.info("open report page");
+        return "report"; // ứng với templates/report.html
+    }
+
+    // ---- proxy: report bài viết (api 5) ----
+    @PostMapping(value = "/search-user/report/{articleId}")
+    @ResponseBody
+    public ResponseEntity<Void> reportArticle(
+            @PathVariable String articleId,
+            @RequestParam String message) {
+
+        log.info("reportArticle id={}; message={}", articleId, message);
+
+        String uri = UriComponentsBuilder
+                .fromUriString(gatewayUrl + "/api/v1/articles/" + articleId)
+                .queryParam("message", message)
+                .toUriString();
+
+        restClient.post()
+                .uri(uri)
+                .retrieve()
+                .toBodilessEntity();
+
+        return ResponseEntity.ok().build();
     }
 }

@@ -24,15 +24,28 @@ public class ArticleQueryController {
     @Autowired
     private QueryGateway queryGateway;
 
-    @Operation(method = "GET", summary = "search filter", description = "search filter")
+    @Operation(method = "GET", summary = "search filter admin", description = "search filter admin")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public List<ArticleResponse> queryFilterBook(@RequestParam(defaultValue = "0", required = false) int pageNo,
+    public List<ArticleResponse> queryFilterBookAdmin(@RequestParam(defaultValue = "0", required = false) int pageNo,
                                                  @RequestParam(defaultValue = "10", required = false) int pageSize,
                                                  @RequestParam(required = false) String[] article,
                                                  @RequestParam Boolean isReady) {
         log.info("searchFilterArticle");
         GetFilterArticle getFilterArticle = new GetFilterArticle(pageNo, pageSize, article, Boolean.FALSE);
+        //lấy kq dạng bất đồng bộ nhưng cần trả kq ngay nên .join để đợi
+        List<ArticleResponse> result = queryGateway.query(getFilterArticle, ResponseTypes.multipleInstancesOf(ArticleResponse.class)).join();
+        return result;
+    }
+
+    @Operation(method = "GET", summary = "search filter", description = "search filter")
+    @GetMapping("/true")
+    public List<ArticleResponse> queryFilterBook(@RequestParam(defaultValue = "0", required = false) int pageNo,
+                                                 @RequestParam(defaultValue = "10", required = false) int pageSize,
+                                                 @RequestParam(required = false) String[] article,
+                                                 @RequestParam Boolean isReady) {
+        log.info("searchFilterArticle");
+        GetFilterArticle getFilterArticle = new GetFilterArticle(pageNo, pageSize, article, Boolean.TRUE);
         //lấy kq dạng bất đồng bộ nhưng cần trả kq ngay nên .join để đợi
         List<ArticleResponse> result = queryGateway.query(getFilterArticle, ResponseTypes.multipleInstancesOf(ArticleResponse.class)).join();
         return result;

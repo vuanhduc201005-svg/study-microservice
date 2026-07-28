@@ -58,10 +58,17 @@ public class ArticleCommandController {
     @Operation(method = "DELETE",summary = "delete article", description = "delete article")
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{articleId}")
-    public String deleteBook(@PathVariable String articleId) {
+    public String deleteArticle(@PathVariable String articleId) {
         log.info("deleteArticle");
         DeleteArticleCommand deleteArticleCommand = new DeleteArticleCommand(
                 articleId);
         return commandGateway.sendAndWait(deleteArticleCommand);
     }
+
+    @Operation(method = "POST",summary = "report article", description = "report article")
+    @PostMapping("/{articleId}")
+    public void reportArticle(@PathVariable String articleId,@RequestParam String message) {
+        log.info("reportArticle,articleId:{},message:{}", articleId, message);
+    }
+
 }
