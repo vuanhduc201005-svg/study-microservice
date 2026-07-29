@@ -50,15 +50,15 @@ public class SearchViewController {
     public String searchArticles(
             @RequestParam(defaultValue = "0") int pageNo,
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) String message) {
+            @RequestParam(required = false) String message,
+            @RequestParam(defaultValue = "true") boolean isReady) {
 
-        log.info("searchArticles name={}; message={}; pageNo={}", name, message, pageNo);
+        log.info("searchArticles name={}; message={}; pageNo={}; isReady={}", name, message, pageNo, isReady);
 
         UriComponentsBuilder builder = UriComponentsBuilder
                 .fromUriString(gatewayUrl + "/api/v1/articles")
                 .queryParam("pageNo", pageNo)
-                // isReady BE bắt buộc phải có nhưng không dùng tới giá trị -> gửi cố định true
-                .queryParam("isReady", true);
+                .queryParam("isReady", isReady);
 
         if (name != null && !name.isBlank()) {
             builder.queryParam("article", "name:" + name);

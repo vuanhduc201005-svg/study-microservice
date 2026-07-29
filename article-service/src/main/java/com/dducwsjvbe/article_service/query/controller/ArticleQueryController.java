@@ -32,7 +32,7 @@ public class ArticleQueryController {
                                                  @RequestParam(required = false) String[] article,
                                                  @RequestParam Boolean isReady) {
         log.info("searchFilterArticle");
-        GetFilterArticle getFilterArticle = new GetFilterArticle(pageNo, pageSize, article, Boolean.FALSE);
+        GetFilterArticle getFilterArticle = new GetFilterArticle(pageNo, pageSize, article, isReady);
         //lấy kq dạng bất đồng bộ nhưng cần trả kq ngay nên .join để đợi
         List<ArticleResponse> result = queryGateway.query(getFilterArticle, ResponseTypes.multipleInstancesOf(ArticleResponse.class)).join();
         return result;

@@ -400,6 +400,14 @@
                 </div>
 
                 <div class="col-6 col-sm-4">
+                    <label for="searchIsReady">Trạng thái</label>
+                    <select id="searchIsReady" class="form-select">
+                        <option value="true">Đã duyệt</option>
+                        <option value="false">Đang đợi duyệt</option>
+                    </select>
+                </div>
+
+                <div class="col-6 col-sm-4">
                     <label for="pageNoInput">Trang số</label>
                     <input type="number" id="pageNoInput" class="form-control" min="0" value="0">
                 </div>
@@ -478,9 +486,10 @@
     const messageInput = document.getElementById("searchMessage");
     const pageNoInput = document.getElementById("pageNoInput");
     const btnSearch = document.getElementById("btnSearch");
+    const isReadyInput = document.getElementById("searchIsReady");
 
     // lưu lại tham số tìm kiếm gần nhất để refresh sau khi Duyệt / Xóa
-    let lastSearchParams = {name: "", message: "", pageNo: 0};
+    let lastSearchParams = {name: "", message: "", pageNo: 0, isReady: "true"};
 
     // ---------------- toast ----------------
     function showToast(message, type) {
@@ -542,9 +551,10 @@
     }
 
     // ---------------- gọi API search (proxy qua /search/list) ----------------
-    function buildSearchUrl(name, message, pageNo) {
+    function buildSearchUrl(name, message, pageNo, isReady) {
         const params = new URLSearchParams();
         params.append("pageNo", pageNo);
+        params.append("isReady", isReady)
 
         if (name && name.trim() !== "") {
             params.append("name", name.trim());
@@ -556,11 +566,11 @@
         return "/search/list?" + params.toString();
     }
 
-    function performSearch(name, message, pageNo) {
-        lastSearchParams = {name: name, message: message, pageNo: pageNo};
+    function performSearch(name, message, pageNo, isReady) {
+        lastSearchParams = {name: name, message: message, pageNo: pageNo, isReady: isReady};
         renderLoading();
 
-        fetch(buildSearchUrl(name, message, pageNo), {
+        fetch(buildSearchUrl(name, message, pageNo, isReady), {
             method: "GET"
         })
             .then(function (res) {
@@ -580,7 +590,12 @@
     }
 
     function refreshCurrentSearch() {
-        performSearch(lastSearchParams.name, lastSearchParams.message, lastSearchParams.pageNo);
+        performSearch(
+            lastSearchParams.name,
+            lastSearchParams.message,
+            lastSearchParams.pageNo,
+            lastSearchParams.isReady
+        );
     }
 
     // ---------------- gọi API duyệt bài (proxy qua /search/approve/{id}) ----------------
@@ -707,7 +722,7 @@
     // ---------------- bind sự kiện ----------------
     btnSearch.addEventListener("click", function () {
         const pageNo = parseInt(pageNoInput.value, 10) || 0;
-        performSearch(nameInput.value, messageInput.value, pageNo);
+        performSearch(nameInput.value, messageInput.value, pageNo, isReadyInput.value);
     });
 
     // cho phép nhấn Enter ở ô input để tìm kiếm
@@ -739,7 +754,7 @@
     });
 
     // load toàn bộ dữ liệu ngay khi mở trang (chưa nhập gì -> full data, trang 0)
-    performSearch("", "", 0);
+    performSearch("", "", 0, "true");
 
 </script>
 
