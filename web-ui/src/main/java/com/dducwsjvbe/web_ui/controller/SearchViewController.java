@@ -34,6 +34,7 @@ public class SearchViewController {
 
     @Value("${GatewayPort.url}")
     private String gatewayUrl;
+
     @Value("${open.file-service}")
     private String fileServiceUrl;
 

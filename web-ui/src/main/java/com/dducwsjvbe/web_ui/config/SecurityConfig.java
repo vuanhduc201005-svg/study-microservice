@@ -18,7 +18,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/register").permitAll()
+                        .requestMatchers("/", "/login", "/register","/actuator/**").permitAll()
                         .anyRequest().permitAll() // vì việc chặn đã do TokenRefreshFilter đảm nhiệm
                 )
                 .addFilterBefore(tokenRefreshFilter, UsernamePasswordAuthenticationFilter.class);

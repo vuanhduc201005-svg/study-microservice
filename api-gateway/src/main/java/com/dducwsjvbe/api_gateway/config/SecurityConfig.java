@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Configuration
 @EnableReactiveMethodSecurity
 public class SecurityConfig {
-    private String[] WHITE_LIST={"/api/v1/auths/**","/api/v1/users/register"};
+    private String[] WHITE_LIST={"/api/v1/auths/**","/api/v1/users/register","/actuator/**"};
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) throws Exception {
         http.csrf(ServerHttpSecurity.CsrfSpec::disable)

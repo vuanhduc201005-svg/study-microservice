@@ -1,0 +1,85 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets:
+          - 'localhost:9090'
+
+  # ==========================
+  # Discovery Server
+  # ==========================
+  - job_name: 'discovery-server-local'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets:
+          - 'host.docker.internal:8761'
+
+  - job_name: 'discovery-server-docker'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets:
+          - 'discovery-server:8761'
+
+  # ==========================
+  # API Gateway
+  # ==========================
+  - job_name: 'api-gateway-local'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets:
+          - 'host.docker.internal:8081'
+
+  - job_name: 'api-gateway-docker'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets:
+          - 'api-gateway:8081'
+
+  # ==========================
+  # User Service
+  # ==========================
+  - job_name: 'user-service-local'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets:
+          - 'host.docker.internal:9005'
+
+  - job_name: 'user-service-docker'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets:
+          - 'user-service:9005'
+
+  # ==========================
+  # Article Service
+  # ==========================
+  - job_name: 'article-service-local'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets:
+          - 'host.docker.internal:9006'
+
+  - job_name: 'article-service-docker'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets:
+          - 'article-service:9006'
+
+  # ==========================
+  # File Service
+  # ==========================
+  - job_name: 'file-service-local'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets:
+          - 'host.docker.internal:9007'
+
+  - job_name: 'file-service-docker'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets:
+          - 'file-service:9007'

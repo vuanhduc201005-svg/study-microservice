@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    private String[] WHITE_LIST={"/api/v1/auths/**","/api/v1/users/register"};
+    private String[] WHITE_LIST={"/api/v1/auths/**","/api/v1/users/register","/actuator/**"};
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
