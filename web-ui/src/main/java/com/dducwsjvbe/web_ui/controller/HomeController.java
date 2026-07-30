@@ -6,10 +6,12 @@ import com.dducwsjvbe.web_ui.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,9 +24,13 @@ import java.time.Duration;
 @Slf4j(topic = "Home-Controller")
 public class HomeController {
     private final AuthService authService;
+    @Value("${keycloak.url}")
+    private String KeycloakUrl;
+
 
     @GetMapping()
-    public String home() {
+    public String home(Model model) {
+        model.addAttribute("KeycloakUrl", KeycloakUrl);
         return "login1"; // ứng với templates/index.html
     }
 

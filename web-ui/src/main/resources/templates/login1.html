@@ -110,6 +110,9 @@
         }
 
     </style>
+    <script th:inline="javascript">
+        const KEYCLOAK_URL = /*[[${KeycloakUrl}]]*/ "";
+    </script>
 
 </head>
 
@@ -207,22 +210,28 @@
 
     <div class="text-center">
 
-        <a
-
-                href="http://localhost:8180/realms/dducwsjvbe/account">
-
+        <a th:href="${KeycloakUrl + '/realms/dducwsjvbe/account'}">
             Register
-
         </a>
+        <!--        <a-->
+
+        <!--                href="https://awesome-bouquet-gazette-nearby.trycloudflare.com/realms/dducwsjvbe/account">-->
+
+        <!--            Register-->
+
+        <!--        </a>-->
 
         |
 
-        <a
+        <!--        <a-->
 
-                href="http://localhost:8180/realms/dducwsjvbe/account">
+        <!--                href="https://awesome-bouquet-gazette-nearby.trycloudflare.com/realms/dducwsjvbe/account">-->
 
+        <!--            Forgot Password-->
+
+        <!--        </a>-->
+        <a th:href="${KeycloakUrl + '/realms/dducwsjvbe/account'}">
             Forgot Password
-
         </a>
 
     </div>
