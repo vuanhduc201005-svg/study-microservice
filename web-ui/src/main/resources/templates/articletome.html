@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài viết của tôi</title>
+
+    <link rel="stylesheet"
+          th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap"
+          rel="stylesheet">
+
+    <style>
+
+        :root {
+            --bg: #F5F1FE;
+            --ink: #241B3A;
+            --ink-soft: #6B6280;
+            --card: #FFFFFF;
+
+            --grad-1: #7C3AED; /* violet */
+            --grad-2: #EC4899; /* pink   */
+            --grad-3: #F59E0B; /* amber, điểm nhấn story-ring */
+
+            --approve: #10B981;
+            --approve-dark: #0B8F68;
+            --danger: #EF4444;
+            --danger-dark: #C81E1E;
+
+            --card-radius: 20px;
+            --pill-radius: 999px;
+
+            --shadow-soft: 0 10px 30px -12px rgba(124, 58, 237, .25);
+            --shadow-card: 0 6px 20px -8px rgba(36, 27, 58, .15);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--ink);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, .brand, .btn, .stat-pill, .empty-state h3 {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* ============ top bar / hero search ============ */
+        .topbar {
+            background: linear-gradient(120deg, var(--grad-1) 0%, var(--grad-2) 100%);
+            padding: 28px 16px 56px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .topbar::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 85% 0%, rgba(245, 158, 11, .35), transparent 45%);
+            pointer-events: none;
+        }
+
+        .brand {
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: -.02em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--grad-3);
+            box-shadow: 0 0 0 4px rgba(245, 158, 11, .35);
+        }
+
+        .search-card {
+            background: var(--card);
+            border-radius: var(--card-radius);
+            box-shadow: var(--shadow-soft);
+            padding: 20px;
+            margin-top: 18px;
+        }
+
+        .search-card label {
+            font-size: .78rem;
+            font-weight: 600;
+            color: var(--ink-soft);
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            margin-bottom: 6px;
+        }
+
+        .search-card .form-control {
+            border-radius: var(--pill-radius);
+            border: 1.5px solid #EBE6FA;
+            padding: 10px 16px;
+            font-size: .95rem;
+        }
+
+        .search-card .form-control:focus {
+            border-color: var(--grad-1);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, .15);
+        }
+
+        .btn-search {
+            border: none;
+            border-radius: var(--pill-radius);
+            padding: 10px 28px;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(120deg, var(--grad-1), var(--grad-2));
+            box-shadow: 0 8px 18px -6px rgba(124, 58, 237, .55);
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+
+        .btn-search:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 22px -6px rgba(124, 58, 237, .6);
+            color: #fff;
+        }
+
+        .btn-search:active {
+            transform: translateY(0);
+        }
+
+        .pagination-hint {
+            color: rgba(255, 255, 255, .85);
+            font-size: .8rem;
+            margin-top: 8px;
+        }
+
+        /* ============ feed ============ */
+        .feed {
+            max-width: 640px;
+            margin: -32px auto 60px;
+            padding: 0 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .post-card {
+            background: var(--card);
+            border-radius: var(--card-radius);
+            box-shadow: var(--shadow-card);
+            padding: 18px 20px;
+            animation: rise .35s ease both;
+        }
+
+        @keyframes rise {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .post-head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .avatar-ring {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            padding: 3px;
+            background: linear-gradient(135deg, var(--grad-1), var(--grad-2), var(--grad-3));
+            flex-shrink: 0;
+        }
+
+        .avatar-ring .avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: var(--card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--grad-1);
+        }
+
+        .post-name {
+            font-weight: 700;
+            font-size: 1.02rem;
+            color: var(--ink);
+            line-height: 1.2;
+        }
+
+        .post-sub {
+            font-size: .78rem;
+            color: var(--ink-soft);
+        }
+
+        .post-message {
+            font-size: .95rem;
+            color: var(--ink);
+            line-height: 1.55;
+            margin-bottom: 14px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .stat-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #FDF2FF;
+            color: var(--grad-1);
+            font-weight: 600;
+            font-size: .82rem;
+            padding: 5px 12px;
+            border-radius: var(--pill-radius);
+            margin-bottom: 14px;
+        }
+
+        .action-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-pill {
+            flex: 1;
+            border: none;
+            border-radius: var(--pill-radius);
+            padding: 9px 12px;
+            font-weight: 600;
+            font-size: .88rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: transform .12s ease, filter .12s ease;
+        }
+
+        .btn-pill:active {
+            transform: scale(.97);
+        }
+
+        .btn-approve {
+            background: rgba(16, 185, 129, .12);
+            color: var(--approve-dark);
+        }
+
+        .btn-approve:hover {
+            background: var(--approve);
+            color: #fff;
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, .1);
+            color: var(--danger-dark);
+        }
+
+        .btn-delete:hover {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        .btn-openfile {
+            width: 100%;
+            border: none;
+            border-radius: 14px;
+            padding: 11px 14px;
+            font-weight: 600;
+            font-size: .9rem;
+            color: #fff;
+            background: linear-gradient(120deg, #6366F1, var(--grad-1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-openfile:hover {
+            filter: brightness(1.06);
+            color: #fff;
+        }
+
+        .badge-ready {
+            font-size: .7rem;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: var(--pill-radius);
+            background: rgba(245, 158, 11, .15);
+            color: #B45309;
+        }
+
+        /* ============ states: loading / empty / toast ============ */
+        .empty-state, .loading-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--ink-soft);
+        }
+
+        .empty-state h3 {
+            color: var(--ink);
+            margin-top: 10px;
+        }
+
+        .spinner-grad {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 4px solid #EBE6FA;
+            border-top-color: var(--grad-1);
+            animation: spin .8s linear infinite;
+            margin: 0 auto 14px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .toast-stack {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast-chip {
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: .88rem;
+            box-shadow: 0 8px 20px -6px rgba(0, 0, 0, .3);
+            animation: rise .25s ease both;
+        }
+
+        .toast-success {
+            background: linear-gradient(120deg, var(--approve), #059669);
+        }
+
+        .toast-error {
+            background: linear-gradient(120deg, var(--danger), #B91C1C);
+        }
+
+        .toast-info {
+            background: linear-gradient(120deg, var(--grad-1), var(--grad-2));
+        }
+
+    </style>
+    <script th:inline="javascript">
+        const FILE_SERVICE_URL = /*[[${fileServiceUrl}]]*/ "";
+    </script>
+</head>
+
+<body>
+
+<!-- ================= TOP BAR / SEARCH ================= -->
+<div class="topbar">
+    <div class="container" style="max-width:640px;">
+
+        <div class="brand">
+            <span class="dot"></span>
+            Article Feed
+        </div>
+
+        <div class="search-card">
+            <div class="row g-3">
+
+                <div class="col-12 col-sm-6">
+                    <label for="searchName">Tên bài viết</label>
+                    <input type="text" id="searchName" class="form-control" placeholder="Nhập tên...">
+                </div>
+
+                <div class="col-12 col-sm-6">
+                    <label for="searchMessage">Nội dung</label>
+                    <input type="text" id="searchMessage" class="form-control" placeholder="Nhập nội dung...">
+                </div>
+
+                <div class="col-6 col-sm-4">
+                    <label for="searchIsReady">Trạng thái</label>
+                    <select id="searchIsReady" class="form-select">
+                        <option value="true">Đã duyệt</option>
+                        <option value="false">Đang đợi duyệt</option>
+                    </select>
+                </div>
+
+                <div class="col-6 col-sm-4">
+                    <label for="pageNoInput">Trang số</label>
+                    <input type="number" id="pageNoInput" class="form-control" min="0" value="0">
+                </div>
+
+                <div class="col-6 col-sm-8 d-flex align-items-end">
+                    <button type="button" id="btnSearch" class="btn btn-search w-100">
+                        🔎 Tìm kiếm
+                    </button>
+                </div>
+
+            </div>
+
+            <div class="pagination-hint">
+                Nhập số trang rồi bấm Tìm kiếm để xem trang tương ứng.
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ================= FEED ================= -->
+<div class="feed" id="feed">
+    <div class="loading-state">
+        <div class="spinner-grad"></div>
+        Đang tải bài viết...
+    </div>
+</div>
+
+<!-- template 1 bài viết, dùng JS clone cho từng phần tử -->
+<template id="postTemplate">
+    <div class="post-card" data-id="" data-file-id="">
+
+        <div class="post-head">
+            <div class="avatar-ring">
+                <div class="avatar avatar-initial">?</div>
+            </div>
+            <div>
+                <div class="post-name post-name-slot"></div>
+                <div class="post-sub">Bài viết</div>
+            </div>
+        </div>
+
+        <div class="post-message post-message-slot"></div>
+
+        <span class="stat-pill">👁️ <span class="views-slot">0</span> lượt xem</span>
+
+        <div class="action-row">
+            <button type="button" class="btn-pill btn-delete btn-xoa">🗑️ Xóa bài</button>
+        </div>
+
+        <button type="button" class="btn-openfile btn-openfile-action">
+            📎 Open file
+        </button>
+
+    </div>
+</template>
+
+<div class="toast-stack" id="toastStack"></div>
+
+<script>
+
+    // ============================================================
+    // Toàn bộ request bên dưới gọi về chính server web-ui (same-origin):
+    // /search/list, /search/approve/{id}, /search/delete/{id}, /search/file-path.
+    // SearchViewController dùng RestClient (đã gắn sẵn Bearer token qua
+    // interceptor) để proxy sang API Gateway (8081) -> JS không cần lo
+    // cookie/CORS cross-site nữa.
+    // ============================================================
+
+    const feedEl = document.getElementById("feed");
+    const toastStack = document.getElementById("toastStack");
+    const postTemplate = document.getElementById("postTemplate");
+
+    const nameInput = document.getElementById("searchName");
+    const messageInput = document.getElementById("searchMessage");
+    const pageNoInput = document.getElementById("pageNoInput");
+    const btnSearch = document.getElementById("btnSearch");
+    const isReadyInput = document.getElementById("searchIsReady");
+
+    // lưu lại tham số tìm kiếm gần nhất để refresh sau khi Duyệt / Xóa
+    let lastSearchParams = {name: "", message: "", pageNo: 0, isReady: "true"};
+
+    // ---------------- toast ----------------
+    function showToast(message, type) {
+        const chip = document.createElement("div");
+        chip.className = "toast-chip toast-" + (type || "info");
+        chip.textContent = message;
+        toastStack.appendChild(chip);
+        setTimeout(function () {
+            chip.remove();
+        }, 3000);
+    }
+
+    // ---------------- render feed ----------------
+    function renderLoading() {
+        feedEl.innerHTML =
+            '<div class="loading-state">' +
+            '<div class="spinner-grad"></div>Đang tải bài viết...</div>';
+    }
+
+    function renderEmpty() {
+        feedEl.innerHTML =
+            '<div class="empty-state">' +
+            '<div style="font-size:2.2rem;">🗂️</div>' +
+            "<h3>Không tìm thấy bài viết</h3>" +
+            "<div>Thử đổi từ khóa hoặc số trang khác xem sao.</div>" +
+            "</div>";
+    }
+
+    function renderArticles(articles) {
+        feedEl.innerHTML = "";
+
+        if (!articles || articles.length === 0) {
+            renderEmpty();
+            return;
+        }
+
+        articles.forEach(function (article) {
+            const node = postTemplate.content.cloneNode(true);
+            const card = node.querySelector(".post-card");
+
+            card.dataset.id = article.id || "";
+            card.dataset.fileId = article.fileId || "";
+
+            const initial = (article.name || "?").trim().charAt(0).toUpperCase() || "?";
+            node.querySelector(".avatar-initial").textContent = initial;
+            node.querySelector(".post-name-slot").textContent = article.name || "(Không có tên)";
+            node.querySelector(".post-message-slot").textContent = article.message || "";
+            node.querySelector(".views-slot").textContent = article.views != null ? article.views : 0;
+
+            if (article.isReady) {
+                const badge = document.createElement("span");
+                badge.className = "badge-ready ms-2";
+                badge.textContent = "Đã duyệt";
+                node.querySelector(".post-name-slot").after(badge);
+            }
+
+            feedEl.appendChild(node);
+        });
+    }
+
+    // ---------------- gọi API search (proxy qua /search/list) ----------------
+    function buildSearchUrl(name, message, pageNo, isReady) {
+        const params = new URLSearchParams();
+        params.append("pageNo", pageNo);
+        params.append("isReady", isReady)
+
+        if (name && name.trim() !== "") {
+            params.append("name", name.trim());
+        }
+        if (message && message.trim() !== "") {
+            params.append("message", message.trim());
+        }
+
+        return "/my-articles/list?" + params.toString();
+    }
+
+    function performSearch(name, message, pageNo, isReady) {
+        lastSearchParams = {name: name, message: message, pageNo: pageNo, isReady: isReady};
+        renderLoading();
+
+        fetch(buildSearchUrl(name, message, pageNo, isReady), {
+            method: "GET"
+        })
+            .then(function (res) {
+                if (!res.ok) {
+                    throw new Error("Tìm kiếm thất bại (HTTP " + res.status + ")");
+                }
+                return res.json();
+            })
+            .then(function (data) {
+                renderArticles(data);
+            })
+            .catch(function (err) {
+                console.error(err);
+                renderEmpty();
+                showToast(err.message || "Không thể tải danh sách bài viết", "error");
+            });
+    }
+
+    function refreshCurrentSearch() {
+        performSearch(
+            lastSearchParams.name,
+            lastSearchParams.message,
+            lastSearchParams.pageNo,
+            lastSearchParams.isReady
+        );
+    }
+
+    // ---------------- gọi API xóa bài (proxy qua /search/delete/{id}) ----------------
+    function deleteArticle(id) {
+        if (!window.confirm("Bạn có chắc muốn xóa bài viết này?")) {
+            return;
+        }
+
+        fetch("/search/delete/" + id, {
+            method: "DELETE"
+        })
+            .then(function (res) {
+                if (!res.ok) {
+                    throw new Error("Xóa bài thất bại (HTTP " + res.status + ")");
+                }
+                showToast("Đã xóa bài viết 🗑️", "success");
+                refreshCurrentSearch();
+            })
+            .catch(function (err) {
+                console.error(err);
+                showToast(err.message || "Xóa bài thất bại", "error");
+            });
+    }
+
+    // ---------------- gọi API lấy đường dẫn file (proxy qua /search/file-path) ----------------
+    // các đuôi file trình duyệt có thể hiển thị trực tiếp -> mở tab mới
+    const VIEWABLE_EXTENSIONS = [
+        // ảnh
+        "jpg", "jpeg", "png", "gif", "bmp", "webp", "svg", "ico",
+        // video
+        "mp4", "webm", "ogg", "ogv", "mov",
+        // audio
+        "mp3", "wav", "flac", "aac",
+        // tài liệu / văn bản
+        "pdf", "txt", "html", "htm"
+    ];
+
+    function getExtension(path) {
+        const clean = path.split("?")[0].split("#")[0];
+        const idx = clean.lastIndexOf(".");
+        return idx >= 0 ? clean.substring(idx + 1).toLowerCase() : "";
+    }
+
+    // với file không xem trực tiếp được (doc/xlsx/zip/...) -> ép trình duyệt tải về
+    // function downloadFile(path) {
+    //     const a = document.createElement("a");
+    //     a.href = path;
+    //     a.download = path.split("/").pop().split("?")[0] || "download";
+    //     document.body.appendChild(a);
+    //     a.click();
+    //     a.remove();
+    // }
+    function downloadFile(path) {
+        console.log("FILE_SERVICE_URL =", FILE_SERVICE_URL);
+        console.log("path =", path);
+        console.log("url =", FILE_SERVICE_URL + path);
+        const a = document.createElement("a");
+        a.href = FILE_SERVICE_URL + path;
+        a.download = "";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+    }
+    function openFile(fileId, articleId) {
+        if (!fileId) {
+            showToast("Bài viết này không có file đính kèm", "error");
+            return;
+        }
+
+        const url =
+            "/search/file-path?fileId=" +
+            encodeURIComponent(fileId) +
+            "&articleId=" +
+            encodeURIComponent(articleId);
+
+        fetch(url, {method: "GET"})
+            .then(function (res) {
+                if (!res.ok) {
+                    throw new Error("Không lấy được đường dẫn file (HTTP " + res.status + ")");
+                }
+                return res.text();
+            })
+            .then(function (rawPath) {
+                let path = rawPath.trim();
+                // BE trả ResponseEntity.ok(String) -> có thể là JSON string có ngoặc kép
+                if (path.startsWith('"') && path.endsWith('"')) {
+                    path = JSON.parse(path);
+                }
+
+                const ext = getExtension(path);
+                if (VIEWABLE_EXTENSIONS.includes(ext)) {
+                    // ảnh / video / pdf / txt / html -> mở luôn ở tab mới
+                    window.open(FILE_SERVICE_URL+path, "_blank");
+                } else {
+                    // doc/docx/xlsx/zip/... trình duyệt không xem trực tiếp được -> tải về
+                    showToast("Đang tải file về máy...", "info");
+                    downloadFile(path);
+                }
+            })
+            .catch(function (err) {
+                console.error(err);
+                showToast(err.message || "Không thể mở file", "error");
+            });
+    }
+
+    // ---------------- bind sự kiện ----------------
+    btnSearch.addEventListener("click", function () {
+        const pageNo = parseInt(pageNoInput.value, 10) || 0;
+        performSearch(nameInput.value, messageInput.value, pageNo, isReadyInput.value);
+    });
+
+    // cho phép nhấn Enter ở ô input để tìm kiếm
+    [nameInput, messageInput, pageNoInput].forEach(function (el) {
+        el.addEventListener("keydown", function (e) {
+            if (e.key === "Enter") {
+                btnSearch.click();
+            }
+        });
+    });
+
+    // event delegation cho 3 nút Duyệt / Xóa / Open file trong mỗi card
+    feedEl.addEventListener("click", function (e) {
+        const card = e.target.closest(".post-card");
+        if (!card) {
+            return;
+        }
+
+        const id = card.dataset.id;
+        const fileId = card.dataset.fileId;
+
+        if (e.target.closest(".btn-duyet")) {
+            approveArticle(id);
+        } else if (e.target.closest(".btn-xoa")) {
+            deleteArticle(id);
+        } else if (e.target.closest(".btn-openfile-action")) {
+            openFile(fileId, id);
+        }
+    });
+
+    // load toàn bộ dữ liệu ngay khi mở trang (chưa nhập gì -> full data, trang 0)
+    performSearch("", "", 0, "true");
+
+</script>
+
+<script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+</body>
+
+</html>

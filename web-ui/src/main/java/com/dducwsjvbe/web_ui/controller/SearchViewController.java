@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
+
 /**
  * Controller cho trang tìm kiếm bài viết.
  *
@@ -62,14 +64,14 @@ public class SearchViewController {
                 .queryParam("isReady", isReady);
 
         if (name != null && !name.isBlank()) {
-            builder.queryParam("article", "name:" + name);
+            builder.queryParam("article", "name~" + name);
         }
         if (message != null && !message.isBlank()) {
-            builder.queryParam("article", "message:" + message);
+            builder.queryParam("article", "message~" + message);
         }
-
+        URI uri = builder.build().encode().toUri();
         return restClient.get()
-                .uri(builder.build().toUri())
+                .uri(uri)
                 .retrieve()
                 .body(String.class);
     }
@@ -139,14 +141,14 @@ public class SearchViewController {
                 .queryParam("isReady", true);
 
         if (name != null && !name.isBlank()) {
-            builder.queryParam("article", "name:" + name);
+            builder.queryParam("article", "name~" + name);
         }
         if (message != null && !message.isBlank()) {
-            builder.queryParam("article", "message:" + message);
+            builder.queryParam("article", "message~" + message);
         }
-
+        URI uri = builder.build().encode().toUri();
         return restClient.get()
-                .uri(builder.build().toUri())
+                .uri(uri)
                 .retrieve()
                 .body(String.class);
     }
@@ -178,4 +180,47 @@ public class SearchViewController {
 
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/my-articles")
+    public String myArticlesPage(Model model) {
+        log.info("open my-articles page");
+        model.addAttribute("fileServiceUrl", fileServiceUrl);
+        return "articletome";
+    }
+
+    // ---- proxy: tìm bài viết của chính user đang đăng nhập ----
+    @GetMapping(value = "/my-articles/list", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public String searchMyArticles(
+            @RequestParam(defaultValue = "0") int pageNo,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String message,
+            @RequestParam(defaultValue = "true") boolean isReady) {
+
+        log.info("searchMyArticles name={}; message={}; pageNo={}; isReady={}", name, message, pageNo, isReady);
+
+        UriComponentsBuilder builder = UriComponentsBuilder
+                .fromUriString(gatewayUrl + "/api/v1/articles/me")
+                .queryParam("pageNo", pageNo)
+                .queryParam("isReady", isReady);
+
+        if (name != null && !name.isBlank()) {
+            builder.queryParam("article", "name~" + name);
+        }
+        if (message != null && !message.isBlank()) {
+            builder.queryParam("article", "message~" + message);
+        }
+        URI uri = builder.build().encode().toUri();
+        log.info("URI = {}", uri);
+        // Bearer token của user hiện tại đã được gắn sẵn qua interceptor của restClient,
+        // nên service article sẽ tự lấy jwt.getSubject() để nối "id:userId" vào filter.
+        return restClient.get()
+                .uri(uri)
+                .retrieve()
+                .body(String.class);
+    }
 }
+/*
+                .uri(builder.build().toUri())
+
+ */

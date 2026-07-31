@@ -23,7 +23,6 @@ public class ArticleCommandController {
     private CommandGateway commandGateway;
 
     @Operation(method = "POST", summary = "create article", description = "create article")
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public String addArticle(@Valid @RequestBody ArticleCreateRequest articleCreateRequest) {
         log.info("addBook");
@@ -39,7 +38,7 @@ public class ArticleCommandController {
     }
 
     @Operation(method = "PUT",summary = "update article", description = "update article")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
     @PutMapping("/{articleId}")
     public String updateArticle(@PathVariable String articleId,
                              @RequestBody ArticleUpdateRequest articleUpdateRequest) {
@@ -56,7 +55,6 @@ public class ArticleCommandController {
     }
 
     @Operation(method = "DELETE",summary = "delete article", description = "delete article")
-    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{articleId}")
     public String deleteArticle(@PathVariable String articleId) {
         log.info("deleteArticle");

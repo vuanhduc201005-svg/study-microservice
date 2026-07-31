@@ -30,6 +30,7 @@ public class SearchServiceImpl implements SearchService {
         List<Predicate> predicates = new ArrayList<>();
         Pattern pattern = Pattern.compile("(\\w+?)([:<>~!])(\\p{Punct}?)(.*?)(\\p{Punct}?)$");
         for (String e : article) {
+            System.out.println("Filter = " + e);
             Matcher matcher = pattern.matcher(e);
             if (matcher.find()) {
                 SpecSearchCriteria criteria = new SpecSearchCriteria(
@@ -41,10 +42,13 @@ public class SearchServiceImpl implements SearchService {
                 );
                 predicates.add(toBookPredicate(root, criteriaBuilder, criteria));
             }
-            predicates.add(
-                    criteriaBuilder.equal(root.get("isReady"), isReady)
-            );
+//            predicates.add(
+//                    criteriaBuilder.equal(root.get("isReady"), isReady)
+//            );
         }
+        predicates.add(
+                criteriaBuilder.equal(root.get("isReady"), isReady)
+        );
         if (!predicates.isEmpty()) {
             query.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
         }
@@ -98,3 +102,6 @@ public class SearchServiceImpl implements SearchService {
         return value; // String giữ nguyên
     }
 }
+/*
+.setFirstResult((int) pageable.getOffset())
+ */

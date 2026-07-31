@@ -9,11 +9,14 @@ import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -28,9 +31,9 @@ public class ArticleQueryController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
     @GetMapping
     public List<ArticleResponse> queryFilterBookAdmin(@RequestParam(defaultValue = "0", required = false) int pageNo,
-                                                 @RequestParam(defaultValue = "10", required = false) int pageSize,
-                                                 @RequestParam(required = false) String[] article,
-                                                 @RequestParam Boolean isReady) {
+                                                      @RequestParam(defaultValue = "10", required = false) int pageSize,
+                                                      @RequestParam(required = false) String[] article,
+                                                      @RequestParam Boolean isReady) {
         log.info("searchFilterArticle");
         GetFilterArticle getFilterArticle = new GetFilterArticle(pageNo, pageSize, article, isReady);
         //lấy kq dạng bất đồng bộ nhưng cần trả kq ngay nên .join để đợi
@@ -48,6 +51,35 @@ public class ArticleQueryController {
         GetFilterArticle getFilterArticle = new GetFilterArticle(pageNo, pageSize, article, Boolean.TRUE);
         //lấy kq dạng bất đồng bộ nhưng cần trả kq ngay nên .join để đợi
         List<ArticleResponse> result = queryGateway.query(getFilterArticle, ResponseTypes.multipleInstancesOf(ArticleResponse.class)).join();
+        return result;
+    }
+
+    @Operation(method = "GET", summary = "search filter", description = "search filter")
+    @GetMapping("/me")
+    public List<ArticleResponse> queryFilterBookToMe(@RequestParam(defaultValue = "0", required = false) int pageNo,
+                                                     @RequestParam(defaultValue = "10", required = false) int pageSize,
+                                                     @RequestParam(required = false) String[] article,
+                                                     @RequestParam Boolean isReady,
+                                                     @AuthenticationPrincipal Jwt jwt) {
+        log.info("searchFilterArticle");
+        log.info("article={}", Arrays.toString(article));
+        String userId = jwt.getSubject();
+        String[] articleWithUserFilter = appendUserIdFilter(article, userId);
+        GetFilterArticle getFilterArticle = new GetFilterArticle(pageNo, pageSize, articleWithUserFilter, isReady);
+        //lấy kq dạng bất đồng bộ nhưng cần trả kq ngay nên .join để đợi
+        List<ArticleResponse> result = queryGateway.query(getFilterArticle, ResponseTypes.multipleInstancesOf(ArticleResponse.class)).join();
+        return result;
+    }
+
+    private String[] appendUserIdFilter(String[] article, String userId) {
+        String userFilter = "author:" + userId;
+
+        if (article == null || article.length == 0) {
+            return new String[]{userFilter};
+        }
+
+        String[] result = Arrays.copyOf(article, article.length + 1);
+        result[article.length] = userFilter;
         return result;
     }
 }
