@@ -331,19 +331,13 @@
             console.log(user.roles);
 
             if (user.roles.includes("ADMIN")) {
-
                 window.location.href = "/admin";
-
-            } else if (user.roles.includes("USER")) {
-
-                window.location.href = "/home";
-
-            } else {
-
-                window.location.href = "/";
-
+            }  else if (user.roles.includes("STAFF")){
+                window.location.href = "/staff";
             }
-
+            else if (user.roles.includes("USER")) {
+                window.location.href = "/user";
+            }
         } catch (err) {
 //lỗi call api,mạng
             console.error(err);

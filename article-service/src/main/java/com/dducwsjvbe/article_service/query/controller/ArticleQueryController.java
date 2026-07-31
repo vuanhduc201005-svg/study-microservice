@@ -25,7 +25,7 @@ public class ArticleQueryController {
     private QueryGateway queryGateway;
 
     @Operation(method = "GET", summary = "search filter admin", description = "search filter admin")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
     @GetMapping
     public List<ArticleResponse> queryFilterBookAdmin(@RequestParam(defaultValue = "0", required = false) int pageNo,
                                                  @RequestParam(defaultValue = "10", required = false) int pageSize,
