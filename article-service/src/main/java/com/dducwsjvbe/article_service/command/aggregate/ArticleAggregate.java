@@ -9,6 +9,7 @@ import com.dducwsjvbe.article_service.command.event.ArticleCreatedEvent;
 import com.dducwsjvbe.article_service.command.event.ArticleDeleteEvent;
 import com.dducwsjvbe.article_service.command.event.ArticleUpdateEvent;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -20,6 +21,7 @@ import org.springframework.util.StringUtils;
 
 @Aggregate
 @NoArgsConstructor
+@Slf4j(topic = "Article-Service/Article-Aggregate")
 public class ArticleAggregate {
     @AggregateIdentifier
     private String id;
@@ -32,6 +34,7 @@ public class ArticleAggregate {
 
     @CommandHandler
     public ArticleAggregate(CreateArticleCommand command) {
+        log.info("Create Article Command:name={},message={},author={},fileId={}", command.getName(), command.getMessage(), command.getAuthor(), command.getFileId());
         ArticleCreatedEvent articleCreatedEvent = new ArticleCreatedEvent();
         BeanUtils.copyProperties(command, articleCreatedEvent);
         AggregateLifecycle.apply(articleCreatedEvent
@@ -51,6 +54,7 @@ public class ArticleAggregate {
 
     @CommandHandler
     public void handle(UpdateArticleCommand command) {
+        log.info("Update Article Command:name={},message={},author={},fileId={},isReady={}", command.getName(), command.getMessage(), command.getAuthor(), command.getFileId(),command.getIsReady());
         boolean hasAnyField = StringUtils.hasText(String.valueOf(command.getIsReady()));
         // Không có gì thay đổi → không apply event, trả về luôn
         if (!hasAnyField) {
@@ -88,6 +92,7 @@ public class ArticleAggregate {
 
     @CommandHandler
     public void handle(DeleteArticleCommand command) {
+        log.info("Delete Article Command:Id={}", command.getId());
         ArticleDeleteEvent articleDeleteEvent = new ArticleDeleteEvent();
         BeanUtils.copyProperties(command, articleDeleteEvent);
         AggregateLifecycle.apply(articleDeleteEvent);

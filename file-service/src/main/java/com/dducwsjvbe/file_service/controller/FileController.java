@@ -21,7 +21,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/v1/files")
-@Slf4j(topic = "File-Controller")
+@Slf4j(topic = "File-Service/File-Controller")
 @Tag(name = "File-Controller")
 @RequiredArgsConstructor
 public class FileController {
@@ -41,8 +41,8 @@ public class FileController {
             @RequestParam("totalChunks") int totalChunks,
             @RequestParam("file") MultipartFile file,
             @AuthenticationPrincipal Jwt jwt) throws IOException, RuntimeException {
-        log.info("upload chunk");
         String userId = jwt.getSubject();
+        log.info("Upload request:authorId={},articleName={},articleMessage={},fileId={},chunkIndex/totalChunks={}/{}",userId,articleName,articleMessage,fileId,chunkIndex,totalChunks);
         return fileService.saveChunk(fileId, fileName, chunkIndex, totalChunks, file, articleId, articleMessage, articleName, userId);
     }
 

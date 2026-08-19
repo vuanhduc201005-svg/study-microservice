@@ -1,6 +1,5 @@
 package com.dducwsjvbe.file_service.service;
 
-
 import com.dducwsjvbe.file_service.model.response.FileUploadResponse;
 import com.dducwsjvbe.file_service.model.response.ResponseData;
 import com.dducwsjvbe.file_service.repository.FileRepository;
@@ -19,9 +18,8 @@ import java.nio.file.Paths;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-
 @Service
-@Slf4j(topic = "File-Service-Impl")
+@Slf4j(topic = "File-Service/File-Service-Impl")
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService {
     @Value("${file.upload.path:./uploads}")
@@ -37,11 +35,10 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public ResponseData<?> saveChunk(String fileId, String fileName, int chunkIndex, int totalChunks, MultipartFile file, String articleId, String articleMessage, String articleName, String userId) throws IOException, RuntimeException {
-        log.info("In FileServiceImpl.saveChunk={},{},{}", chunkIndex, totalChunks, articleId);
+        log.info("Upload request:authorId={},articleName={},articleMessage={},fileId={},chunkIndex/totalChunks={}/{}",userId,articleName,articleMessage,fileId,chunkIndex,totalChunks);
         if (!fileId.matches("^[a-zA-Z0-9_-]+$") || !fileName.matches("^[a-zA-Z0-9_-]+\\.[a-zA-Z0-9]+$")) {
             throw new IllegalArgumentException("Invalid file id format: " + fileId);
         }
-        log.info("Saving chunk {}/{} for file: {}", chunkIndex + 1, totalChunks, fileName);
         //put fileId nếu chưa tồn tại=putIfAbsent tránh việc cả 3 chunk vào 1 lúc và tại ra 3 fileId
         uploadProgress.putIfAbsent(fileId, new UploadProgressTracker(fileId, fileName, totalChunks));
         UploadProgressTracker tracker = uploadProgress.get(fileId);

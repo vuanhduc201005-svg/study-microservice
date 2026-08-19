@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "files")
+@Table(name = "files",indexes = {
+        @Index(name = "idx_file_file_path", columnList = "file_path")
+})
 @Getter
 @Setter
 @Builder

@@ -5,6 +5,7 @@ import com.dducwsjvbe.user_service.dto.request.LoginRequestDto;
 import com.dducwsjvbe.user_service.dto.request.RefreshTokenRequestDto;
 import com.dducwsjvbe.user_service.dto.response.LoginResponse;
 import com.dducwsjvbe.user_service.service.interfaces.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +15,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/auths")
 @RequiredArgsConstructor
-@Slf4j(topic = "Auth-Controller")
+@Slf4j(topic = "User-Service/Auth-Controller")
+@Tag(name = "Auth-Controller")
 public class AuthController {
     private final UserService userService;
 

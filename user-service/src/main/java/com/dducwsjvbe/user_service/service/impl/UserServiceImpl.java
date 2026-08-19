@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j(topic = "User-Service-Impl")
+@Slf4j(topic = "User-Service/User-Service-Impl")
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
@@ -147,6 +147,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public LoginResponse login(LoginRequestDto request) {
+        log.info("Login Request: {}", request.getUsername());
         TokenExchangeResponse token = identityClient.exchangeUserToken(UserTokenExchangeParam.builder()
                 .grant_type("password")
                 .client_secret(clientSecret)

@@ -29,7 +29,7 @@ import java.util.Comparator;
 
 
 @Service
-@Slf4j(topic = "AsyncKafka-Service")
+@Slf4j(topic = "File-Service/AsyncKafka-Service")
 @RequiredArgsConstructor
 public class AsyncKafkaService {
     @Value("${file.upload.path:./uploads}")
@@ -50,6 +50,7 @@ public class AsyncKafkaService {
     )
     @KafkaListener(topics = "article-delete-topic", groupId = "article-delete-group", concurrency = "3")
     public void asyncDeleteArticle(String message) throws IOException, RuntimeException {
+        log.info("asyncDeleteArticle,message:{}", message);
         File file = fileRepository.findByArticleId(message);
         if (file == null) {
             throw new RuntimeException("file of article id " + message + " not found");
@@ -80,7 +81,7 @@ public class AsyncKafkaService {
         String articleMessage = arr[3].substring(arr[3].indexOf('=') + 1);
         String userId = arr[4].substring(arr[4].indexOf('=') + 1);
         String articleName = arr[5].substring(arr[5].indexOf('=') + 1);
-
+        log.info("async-upload-message:authorId={},articleName={},articleMessage={},fileId={}",userId,articleName,articleMessage,fileId);
         String finalPath = mergeChunks(fileId, fileName);
         long fileSize = getFileSize(finalPath);
 

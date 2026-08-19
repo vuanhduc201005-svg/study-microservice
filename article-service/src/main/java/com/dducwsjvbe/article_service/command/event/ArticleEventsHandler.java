@@ -11,13 +11,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 @Component
-@Slf4j
+@Slf4j(topic = "Article-Service/Article-Events-Handler")
 @RequiredArgsConstructor
 public class ArticleEventsHandler {
     private final ArticleRepository articleRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;
     @EventHandler
     public void on(ArticleCreatedEvent event) {
+        log.info("Article Created Event:Id={},name={},message={},author={},fileId={}",event.getId() , event.getName(), event.getMessage(), event.getAuthor(), event.getFileId());
         if (articleRepository.existsById(event.getId())) {
             return;
         }
@@ -35,6 +36,7 @@ public class ArticleEventsHandler {
 
     @EventHandler
     public void on(ArticleUpdateEvent event) {
+        log.info("Article Update Event:Id={},name={},message={},author={},fileId={},isReady={}",event.getId() , event.getName(), event.getMessage(), event.getAuthor(), event.getFileId(), event.getIsReady());
         Article article = articleRepository.findById(event.getId()).orElseThrow(() -> new RuntimeException("Book not found" + event.getId()));
         if (event.getIsReady() != null) {
             article.setIsReady(Boolean.TRUE);
@@ -45,6 +47,7 @@ public class ArticleEventsHandler {
 
     @EventHandler
     public void on(ArticleDeleteEvent event) {
+        log.info("Article Delete Event:id={}",event.getId());
         try {
             articleRepository.deleteById(event.getId());
             kafkaTemplate.send("article-delete-topic", event.getId());

@@ -502,10 +502,11 @@ services:
       #      KC_DB_PASSWORD: ${DB_PASSWORD}
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_PROXY_HEADERS: xforwarded
     #      KC_HOSTNAME: ${KEYCLOAK_HOSTNAME}
     #      KEYCLOAK_PORT: ${KEYCLOAK_PORT}
-    #      KC_HOSTNAME_STRICT: "false"
-    #      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME_STRICT: "false"
+      KC_HTTP_ENABLED: "true"
     ports:
       - "8180:8080"
     volumes:

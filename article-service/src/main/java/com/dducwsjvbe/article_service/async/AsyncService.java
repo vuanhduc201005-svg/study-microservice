@@ -23,7 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Service
-@Slf4j(topic = "Async-Service")
+@Slf4j(topic = "Article-Service/Async-Service")
 @RequiredArgsConstructor
 public class AsyncService {
     private final CommandGateway commandGateway;
@@ -39,8 +39,6 @@ public class AsyncService {
     )
     @KafkaListener(topics = "async-create-article-topic", groupId = "async-create-article-group")
     public void asyncCreateArticle(String message) throws IOException,RuntimeException {
-
-        log.info("async-create-article-topic={}", message);
         String[] arr = message.split(",");
         String fileId = arr[0].substring(arr[0].indexOf('=') + 1);
         String articleId = arr[1].substring(arr[1].indexOf('=') + 1);
@@ -49,6 +47,7 @@ public class AsyncService {
         String articleName = arr[4].substring(arr[4].indexOf('=') + 1);
         String filePath = arr[5].substring(arr[5].indexOf('=') + 1);
         validateFileExists(filePath);
+        log.info("async-create-article-topic:authorId={},articleName={},articleMessage={},fileId={}",userId,articleName,articleMessage,fileId);
         CreateArticleCommand command = new CreateArticleCommand();
         command.setId(articleId);
         command.setName(articleName);

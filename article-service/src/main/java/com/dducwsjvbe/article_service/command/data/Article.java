@@ -1,16 +1,21 @@
 package com.dducwsjvbe.article_service.command.data;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "articles")
+@Table(name = "articles",indexes = {
+        @Index(name = "idx_article_name",columnList = "name"),
+        @Index(name = "idx_article_message",columnList = "message"),
+        @Index(name = "idx_article_is_ready",columnList = "is_ready"),
+        @Index(
+                name = "idx_article_name_message_is_ready",
+                columnList = "name, message, is_ready"
+        )
+})
 @Getter
 @Setter
 @AllArgsConstructor
